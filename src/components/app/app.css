@@ -1,1 +1,10 @@
-/*# sourceMappingURL=app.css.map */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,500;1,300&display=swap");
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: #bfdbf7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}/*# sourceMappingURL=app.css.map */
