@@ -1,1 +1,1 @@
-{"version":3,"sources":[],"names":[],"mappings":"","file":"patientPage.css"}
+{"version":3,"sources":["patientPage.scss","patientPage.css"],"names":[],"mappings":"AAAA;EACI,WAAA;EACA,YAAA;EACA,aAAA;EACA,sBAAA;EACA,mBAAA;ACCJ","file":"patientPage.css"}

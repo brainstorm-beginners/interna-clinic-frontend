@@ -8,11 +8,9 @@ $white-font-color: #ebebeb;
 $basic-font-family: 'IBM Plex Sans', sans-serif;
 
 html, body {
+    display: block;
+    width: 100vw;
     margin: 0;
     padding: 0;
-    min-height: 100vh;
     background-color: $light-blue-color;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }

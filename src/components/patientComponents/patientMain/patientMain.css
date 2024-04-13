@@ -1,0 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,500;1,300&display=swap");
+html, body {
+  display: block;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  background-color: #bfdbf7;
+}
+
+.loader {
+  width: 50px;
+  display: grid;
+  aspect-ratio: 1;
+  border: 4px solid rgba(0, 0, 0, 0);
+  border-radius: 50%;
+  border-right-color: #00416A;
+  animation: infiniteRotating 1s infinite linear;
+  margin-top: 35vh;
+}
+.loader::before, .loader::after {
+  content: "";
+  grid-area: 1/1;
+  margin: 2px;
+  border: inherit;
+  border-radius: 50%;
+  animation: infiniteRotating 2s infinite;
+}
+.loader::after {
+  margin: 8px;
+  animation-duration: 3s;
+}
+@keyframes infiniteRotating {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+
+.patientMain {
+  width: 97%;
+}
+.patientMain .dataSectionTitle {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: clamp(1rem, 1.8vw, 1.5rem) !important;
+}
+.patientMain .dataSectionDividerLineStart {
+  border-color: #00416A;
+  margin-bottom: 50px;
+}
+.patientMain .dataSectionDividerLineEnd {
+  border-color: #00416A;
+  margin-top: 50px;
+}
+.patientMain .patientPersonalDataWrapper {
+  display: flex;
+  gap: 50px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-family: "IBM Plex Sans", sans-serif;
+  padding: 0px 40px;
+}
+.patientMain .patientPersonalDataWrapper .patientFirstNameWrapper, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper, .patientMain .patientPersonalDataWrapper .patientIINWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
+}
+.patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientFirstNameLabel, .patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientLastNameLabel, .patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientMiddleNameLabel, .patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientIINLabel, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientFirstNameLabel, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientLastNameLabel, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientMiddleNameLabel, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientIINLabel, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientFirstNameLabel, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientLastNameLabel, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientMiddleNameLabel, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientIINLabel, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientFirstNameLabel, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientLastNameLabel, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientMiddleNameLabel, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientIINLabel {
+  padding-left: 23px;
+  color: grey;
+  font-size: clamp(1rem, 1.8vw, 1.5rem) !important;
+  flex-grow: 1;
+}
+.patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientFirstNameBox, .patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientLastNameBox, .patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientMiddleNameBox, .patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientIINBox, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientFirstNameBox, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientLastNameBox, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientMiddleNameBox, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientIINBox, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientFirstNameBox, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientLastNameBox, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientMiddleNameBox, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientIINBox, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientFirstNameBox, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientLastNameBox, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientMiddleNameBox, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientIINBox {
+  min-width: 150px;
+  padding: 10px 20px;
+  background-color: #ebebeb;
+  border-radius: 10px;
+  border: 3px solid #00416A;
+  font-size: clamp(1rem, 1.8vw, 1.5rem) !important;
+  flex-grow: 1;
+}/*# sourceMappingURL=patientMain.css.map */

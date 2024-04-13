@@ -1,1 +1,55 @@
-/*# sourceMappingURL=patientHeader.css.map */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,500;1,300&display=swap");
+html, body {
+  display: block;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  background-color: #bfdbf7;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.header_box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 97%;
+  height: -moz-max-content;
+  height: max-content;
+  padding: 20px 20px;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+.header_box .navigation_box {
+  width: -moz-max-content;
+  width: max-content;
+  height: -moz-max-content;
+  height: max-content;
+}
+.header_box .navigation_box .navbar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 25px;
+  padding: 0;
+}
+.header_box .navigation_box .navbar .navbar__element {
+  padding: 10px 20px;
+  list-style: none;
+  color: #202020;
+  font-size: clamp(1rem, 1.8vw, 1.5rem) !important;
+  border: 3px solid #00416A;
+  border-radius: 5px;
+  transition: 0.2s all ease-in-out;
+}
+.header_box .navigation_box .navbar .navbar__element:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+}
+.header_box .navigation_box .navbar .navbar__element.active {
+  background-color: #00416A;
+  color: #ebebeb;
+  transform: scale(1.1);
+}/*# sourceMappingURL=patientHeader.css.map */

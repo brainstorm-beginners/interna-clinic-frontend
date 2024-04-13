@@ -1,1 +1,50 @@
+@use '../../app/app.scss';
 
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.header_box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 97%;
+    height: max-content;
+    padding: 20px 20px;
+    font-family: app.$basic-font-family;
+
+    .navigation_box {
+        width: max-content;
+        height: max-content;
+
+        .navbar {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 25px;
+            padding: 0;
+
+            .navbar__element {
+                padding: 10px 20px;
+                list-style: none;
+                color: app.$dark-font-color;
+                font-size: clamp(1rem, 1.8vw, 1.5rem) !important;
+                border: 3px solid app.$dark-blue-color;
+                border-radius: 5px;
+                transition: 0.2s all ease-in-out;
+
+                &:hover {
+                    cursor: pointer;
+                    transform: scale(1.05);
+                }
+
+                &.active {
+                    background-color: app.$dark-blue-color;
+                    color: app.$white-font-color;
+                    transform: scale(1.1);
+                }
+            }
+        }
+    }
+}
