@@ -33,11 +33,13 @@
 
 
 .patientMain {
-    width: 97%;
+    width: 95%;
+    height: max-content;
+    padding: 0px 0px 50px 0px;
 
     .dataSectionTitle {
         font-family: app.$basic-font-family;
-        font-size: clamp(1rem, 1.8vw, 1.5rem) !important;
+        font-size: clamp(0.9rem, 1.8vw, 1.5rem) !important;
     }
 
     .dataSectionDividerLineStart {
@@ -48,9 +50,10 @@
     .dataSectionDividerLineEnd {
         border-color: app.$dark-blue-color;
         margin-top: 50px;
+        margin-bottom: 50px;
     }
 
-    .patientPersonalDataWrapper {
+    .personalDataWrapper, .medicalDataWrapper, .patientAvailableTestsWrapper, .patientCompletedTestsWrapper {
         display: flex;
         gap: 50px;
         flex-wrap: wrap;
@@ -58,28 +61,38 @@
         font-family: app.$basic-font-family;
         padding: 0px 40px;
 
-        .patientFirstNameWrapper, .patientLastNameWrapper, .patientMiddleNameWrapper, .patientIINWrapper {
+        .patientDataWrapper, .patientDoctorDataWrapper { 
+            width: max-content;
+            max-width: 100%;
             display: flex;
             flex-direction: column;
             gap: 10px;
             flex-grow: 1;
-
-            .patientFirstNameLabel, .patientLastNameLabel, .patientMiddleNameLabel, .patientIINLabel {
-                padding-left: 23px;
+        
+            .patientDataLabel, .patientDoctorDataLabel {
+                width: max-content;
+                text-align: center;
+                padding: 0px 20px;
                 color: grey;
-                font-size: clamp(1rem, 1.8vw, 1.5rem) !important;
-                flex-grow: 1;
-            }
+                font-size: clamp(0.8rem, 1.6vw, 1.3rem) !important;
 
-            .patientFirstNameBox, .patientLastNameBox, .patientMiddleNameBox, .patientIINBox {
+                @media only screen and (max-width: 550px) {
+                    & {
+                        max-width: 80%;
+                    }
+                }
+            }
+            
+            .patientDataBox, .patientDoctorDataBox {
+                display: flex;
                 min-width: 150px;
+                height: 100%;
                 padding: 10px 20px;
                 background-color: app.$white-color;
                 border-radius: 10px;
                 border: 3px solid app.$dark-blue-color;
-                font-size: clamp(1rem, 1.8vw, 1.5rem) !important;
-                flex-grow: 1;
+                font-size: clamp(0.8rem, 1.6vw, 1.3rem) !important;
             }
-        }
+        }        
     }
 }

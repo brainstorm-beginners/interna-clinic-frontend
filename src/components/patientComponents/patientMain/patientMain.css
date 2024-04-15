@@ -5,6 +5,7 @@ html, body {
   margin: 0;
   padding: 0;
   background-color: #bfdbf7;
+  overflow-x: hidden;
 }
 
 .loader {
@@ -36,11 +37,14 @@ html, body {
 }
 
 .patientMain {
-  width: 97%;
+  width: 95%;
+  height: -moz-max-content;
+  height: max-content;
+  padding: 0px 0px 50px 0px;
 }
 .patientMain .dataSectionTitle {
   font-family: "IBM Plex Sans", sans-serif;
-  font-size: clamp(1rem, 1.8vw, 1.5rem) !important;
+  font-size: clamp(0.9rem, 1.8vw, 1.5rem) !important;
 }
 .patientMain .dataSectionDividerLineStart {
   border-color: #00416A;
@@ -49,8 +53,9 @@ html, body {
 .patientMain .dataSectionDividerLineEnd {
   border-color: #00416A;
   margin-top: 50px;
+  margin-bottom: 50px;
 }
-.patientMain .patientPersonalDataWrapper {
+.patientMain .personalDataWrapper, .patientMain .medicalDataWrapper, .patientMain .patientAvailableTestsWrapper, .patientMain .patientCompletedTestsWrapper {
   display: flex;
   gap: 50px;
   flex-wrap: wrap;
@@ -58,24 +63,35 @@ html, body {
   font-family: "IBM Plex Sans", sans-serif;
   padding: 0px 40px;
 }
-.patientMain .patientPersonalDataWrapper .patientFirstNameWrapper, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper, .patientMain .patientPersonalDataWrapper .patientIINWrapper {
+.patientMain .personalDataWrapper .patientDataWrapper, .patientMain .personalDataWrapper .patientDoctorDataWrapper, .patientMain .medicalDataWrapper .patientDataWrapper, .patientMain .medicalDataWrapper .patientDoctorDataWrapper, .patientMain .patientAvailableTestsWrapper .patientDataWrapper, .patientMain .patientAvailableTestsWrapper .patientDoctorDataWrapper, .patientMain .patientCompletedTestsWrapper .patientDataWrapper, .patientMain .patientCompletedTestsWrapper .patientDoctorDataWrapper {
+  width: -moz-max-content;
+  width: max-content;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;
   flex-grow: 1;
 }
-.patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientFirstNameLabel, .patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientLastNameLabel, .patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientMiddleNameLabel, .patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientIINLabel, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientFirstNameLabel, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientLastNameLabel, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientMiddleNameLabel, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientIINLabel, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientFirstNameLabel, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientLastNameLabel, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientMiddleNameLabel, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientIINLabel, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientFirstNameLabel, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientLastNameLabel, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientMiddleNameLabel, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientIINLabel {
-  padding-left: 23px;
+.patientMain .personalDataWrapper .patientDataWrapper .patientDataLabel, .patientMain .personalDataWrapper .patientDataWrapper .patientDoctorDataLabel, .patientMain .personalDataWrapper .patientDoctorDataWrapper .patientDataLabel, .patientMain .personalDataWrapper .patientDoctorDataWrapper .patientDoctorDataLabel, .patientMain .medicalDataWrapper .patientDataWrapper .patientDataLabel, .patientMain .medicalDataWrapper .patientDataWrapper .patientDoctorDataLabel, .patientMain .medicalDataWrapper .patientDoctorDataWrapper .patientDataLabel, .patientMain .medicalDataWrapper .patientDoctorDataWrapper .patientDoctorDataLabel, .patientMain .patientAvailableTestsWrapper .patientDataWrapper .patientDataLabel, .patientMain .patientAvailableTestsWrapper .patientDataWrapper .patientDoctorDataLabel, .patientMain .patientAvailableTestsWrapper .patientDoctorDataWrapper .patientDataLabel, .patientMain .patientAvailableTestsWrapper .patientDoctorDataWrapper .patientDoctorDataLabel, .patientMain .patientCompletedTestsWrapper .patientDataWrapper .patientDataLabel, .patientMain .patientCompletedTestsWrapper .patientDataWrapper .patientDoctorDataLabel, .patientMain .patientCompletedTestsWrapper .patientDoctorDataWrapper .patientDataLabel, .patientMain .patientCompletedTestsWrapper .patientDoctorDataWrapper .patientDoctorDataLabel {
+  width: -moz-max-content;
+  width: max-content;
+  text-align: center;
+  padding: 0px 20px;
   color: grey;
-  font-size: clamp(1rem, 1.8vw, 1.5rem) !important;
-  flex-grow: 1;
+  font-size: clamp(0.8rem, 1.6vw, 1.3rem) !important;
 }
-.patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientFirstNameBox, .patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientLastNameBox, .patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientMiddleNameBox, .patientMain .patientPersonalDataWrapper .patientFirstNameWrapper .patientIINBox, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientFirstNameBox, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientLastNameBox, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientMiddleNameBox, .patientMain .patientPersonalDataWrapper .patientLastNameWrapper .patientIINBox, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientFirstNameBox, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientLastNameBox, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientMiddleNameBox, .patientMain .patientPersonalDataWrapper .patientMiddleNameWrapper .patientIINBox, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientFirstNameBox, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientLastNameBox, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientMiddleNameBox, .patientMain .patientPersonalDataWrapper .patientIINWrapper .patientIINBox {
+@media only screen and (max-width: 550px) {
+  .patientMain .personalDataWrapper .patientDataWrapper .patientDataLabel, .patientMain .personalDataWrapper .patientDataWrapper .patientDoctorDataLabel, .patientMain .personalDataWrapper .patientDoctorDataWrapper .patientDataLabel, .patientMain .personalDataWrapper .patientDoctorDataWrapper .patientDoctorDataLabel, .patientMain .medicalDataWrapper .patientDataWrapper .patientDataLabel, .patientMain .medicalDataWrapper .patientDataWrapper .patientDoctorDataLabel, .patientMain .medicalDataWrapper .patientDoctorDataWrapper .patientDataLabel, .patientMain .medicalDataWrapper .patientDoctorDataWrapper .patientDoctorDataLabel, .patientMain .patientAvailableTestsWrapper .patientDataWrapper .patientDataLabel, .patientMain .patientAvailableTestsWrapper .patientDataWrapper .patientDoctorDataLabel, .patientMain .patientAvailableTestsWrapper .patientDoctorDataWrapper .patientDataLabel, .patientMain .patientAvailableTestsWrapper .patientDoctorDataWrapper .patientDoctorDataLabel, .patientMain .patientCompletedTestsWrapper .patientDataWrapper .patientDataLabel, .patientMain .patientCompletedTestsWrapper .patientDataWrapper .patientDoctorDataLabel, .patientMain .patientCompletedTestsWrapper .patientDoctorDataWrapper .patientDataLabel, .patientMain .patientCompletedTestsWrapper .patientDoctorDataWrapper .patientDoctorDataLabel {
+    max-width: 80%;
+  }
+}
+.patientMain .personalDataWrapper .patientDataWrapper .patientDataBox, .patientMain .personalDataWrapper .patientDataWrapper .patientDoctorDataBox, .patientMain .personalDataWrapper .patientDoctorDataWrapper .patientDataBox, .patientMain .personalDataWrapper .patientDoctorDataWrapper .patientDoctorDataBox, .patientMain .medicalDataWrapper .patientDataWrapper .patientDataBox, .patientMain .medicalDataWrapper .patientDataWrapper .patientDoctorDataBox, .patientMain .medicalDataWrapper .patientDoctorDataWrapper .patientDataBox, .patientMain .medicalDataWrapper .patientDoctorDataWrapper .patientDoctorDataBox, .patientMain .patientAvailableTestsWrapper .patientDataWrapper .patientDataBox, .patientMain .patientAvailableTestsWrapper .patientDataWrapper .patientDoctorDataBox, .patientMain .patientAvailableTestsWrapper .patientDoctorDataWrapper .patientDataBox, .patientMain .patientAvailableTestsWrapper .patientDoctorDataWrapper .patientDoctorDataBox, .patientMain .patientCompletedTestsWrapper .patientDataWrapper .patientDataBox, .patientMain .patientCompletedTestsWrapper .patientDataWrapper .patientDoctorDataBox, .patientMain .patientCompletedTestsWrapper .patientDoctorDataWrapper .patientDataBox, .patientMain .patientCompletedTestsWrapper .patientDoctorDataWrapper .patientDoctorDataBox {
+  display: flex;
   min-width: 150px;
+  height: 100%;
   padding: 10px 20px;
   background-color: #ebebeb;
   border-radius: 10px;
   border: 3px solid #00416A;
-  font-size: clamp(1rem, 1.8vw, 1.5rem) !important;
-  flex-grow: 1;
+  font-size: clamp(0.8rem, 1.6vw, 1.3rem) !important;
 }/*# sourceMappingURL=patientMain.css.map */

@@ -1,4 +1,4 @@
-.patientPage {
+.doctorPage {
   width: 100%;
   height: -moz-max-content;
   height: max-content;
@@ -6,4 +6,4 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-}/*# sourceMappingURL=patientPage.css.map */
+}/*# sourceMappingURL=doctorPage.css.map */

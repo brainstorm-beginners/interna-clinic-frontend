@@ -31,11 +31,9 @@ const AuthProvider = ({ children }) => {
 
         const userData = {'login': login, 'role': role};
         localStorage.setItem('currentUserData', JSON.stringify(userData));
-        console.log("USER DATA: " + localStorage.getItem('currentUserData'));
 
         if (role === "Patient") {
             setRedirectTo(`/patient/${login}/account`);
-            console.log("SUCCESSFULL LOGIN, REDIRECTING TO THE PATIENT PAGE");
         } else if (role === "Doctor") {
             setRedirectTo(`/doctor/${login}/account`);
         } else if (role === "Admin") {
