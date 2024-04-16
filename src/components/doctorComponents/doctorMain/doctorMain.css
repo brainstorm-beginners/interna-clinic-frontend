@@ -217,4 +217,14 @@ html, body {
   100% {
     transform: rotate(0deg);
   }
+}
+.doctorMain .doctorPatientsTable .notFoundTextError {
+  color: grey;
+  background-color: #ebebeb;
+  width: 100%;
+  margin: 0;
+  padding: 20px 0px;
+  font-size: clamp(1rem, 2vw, 1.8rem) !important;
+  text-align: center;
+  border-bottom: 3px solid #00416A;
 }/*# sourceMappingURL=doctorMain.css.map */

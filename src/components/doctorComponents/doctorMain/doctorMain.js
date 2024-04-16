@@ -15,6 +15,7 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
     const [doctorsPatientsData, setDoctorsPatientsData] = useState([])
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [isMenuOpened, setIsMenuOpened] = useState(false);
+    const [searchPatientsResults, setSearchPatientsResults] = useState(null);
 
     useEffect(() => {
         if (redirectTo) {
@@ -236,6 +237,75 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
         document.documentElement.style.overflowY = 'auto';
     }
 
+    const searchPatientByIINButtonHandle = async () => {
+        const handleLogout = () => {
+            setIsAuthenticated(false);
+            setRedirectTo('/login');
+            localStorage.removeItem('currentUserData');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+        };
+
+        const currentUserData = localStorage.getItem('currentUserData');
+        let accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+    
+        if (!currentUserData) {
+            handleLogout();
+            return;
+        }
+    
+        if (!accessToken) {
+            if (refreshToken) {
+                await refresh();
+                accessToken = localStorage.getItem('accessToken');
+            } else {
+                handleLogout();
+                return;
+            }
+        }
+    
+        const searchQuery = document.querySelector('.searchBar').value;
+    
+        try {
+            let response = await fetch(`http://localhost:8080/api/v1/patients/search/${searchQuery}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                }
+            });
+    
+            if (!response.ok && response.status === 401) {
+                try {
+                    await refresh();
+                    accessToken = localStorage.getItem('accessToken');
+                    response = await fetch(`http://localhost:8080/api/v1/patients/search/${searchQuery}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + accessToken
+                        }
+                    });
+                    const searchResults = await response.json();
+                    let searchResultsArray = [];
+                    searchResultsArray.push(searchResults);
+                    setSearchPatientsResults(searchResultsArray);
+                } catch (error) {
+                    handleLogout();
+                }
+            } else {
+                const searchResults = await response.json();
+                let searchResultsArray = [];
+                searchResultsArray.push(searchResults);
+                setSearchPatientsResults(searchResultsArray);
+            }
+        } catch (error) {
+            console.log("TEST: " + searchPatientsResults)
+            console.log("An error occurred while trying to search for the patient.")
+        }
+    };    
+
     if (redirectTo) {
         return <Navigate to={redirectTo} replace />;
     }
@@ -290,12 +360,21 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                 <hr className='dataSectionDividerLineStart'/>
         
                 <div className='searchBarWrapper'>
-                    <input className='searchBar' placeholder='Найти пациента' type='search'></input>
-                    <img src={SearchButtonIcon} className='searchButton' alt=''></img>
+                    <input 
+                        className='searchBar' 
+                        placeholder='Найти пациента по ИИН' 
+                        type='search'
+                        onChange={(event) => {
+                            if (event.target.value === '') {
+                                setSearchPatientsResults(null);
+                            }
+                        }}
+                    />
+                    <img src={SearchButtonIcon} className='searchButton' alt='' onClick={searchPatientByIINButtonHandle}></img>
                 </div>
         
                 <div className='doctorPatientsTable'>
-                    {doctorsPatientsData.map(patient => (
+                    {searchPatientsResults === null && doctorsPatientsData.map(patient => (
                         <React.Fragment key={patient.id}>
                             {isMenuOpened && <div className='blurBackground'></div>}
                             {isMenuOpened && <DoctorPatientDataEditor
@@ -304,6 +383,34 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                                                 doctorsPatientsData={doctorsPatientsData}
                                                 setDoctorsPatientsData={setDoctorsPatientsData}
                                                 />}
+                            <div className='doctorPatientWrapper'>
+                                <Link to={`/patient/${patient.IIN}/account`}>
+                                    <div className='doctorPatientDataBox'>
+                                        <h3 className='patientFullName'>{`${patient.first_name} ${patient.middle_name} ${patient.last_name}`}</h3>
+                                        <p className='patientAge'>({patient.age} полных лет)</p>
+                                    </div>
+                                </Link>
+                                <div className='doctorPatientControlMenuWrapper'>
+                                    <img src={DeleteButtonIcon} className='deletePatientButton' alt='Удалить пациента' onClick={() => deletePatientButtonHandle(patient.id)}></img>
+                                    <img src={EditButtonIcon} className='editPatientButton' alt='Изменить данные' onClick={() => openPatientDataEditorHandle(patient.id)}></img>
+                                </div>
+                            </div>
+                        </React.Fragment>
+                    ))}
+
+                    {searchPatientsResults && searchPatientsResults[0].detail === "Patient not found" && <p className='notFoundTextError'>Ничего не найдено</p>}
+
+                    {searchPatientsResults && searchPatientsResults.length > 0 && searchPatientsResults[0].detail !== "Patient not found" && searchPatientsResults.map(patient => (
+                        <React.Fragment key={patient.id}>
+                        {isMenuOpened && <div className='blurBackground'></div>}
+                        {isMenuOpened && <DoctorPatientDataEditor
+                                            closePatientDataEditorHandle={closePatientDataEditorHandle}
+                                            patientId={selectedPatientId}
+                                            doctorsPatientsData={doctorsPatientsData}
+                                            setDoctorsPatientsData={setDoctorsPatientsData}
+                                            searchPatientsResults={searchPatientsResults}
+                                            setSearchPatientsResults={setSearchPatientsResults}
+                                        />}
                             <div className='doctorPatientWrapper'>
                                 <Link to={`/patient/${patient.IIN}/account`}>
                                     <div className='doctorPatientDataBox'>

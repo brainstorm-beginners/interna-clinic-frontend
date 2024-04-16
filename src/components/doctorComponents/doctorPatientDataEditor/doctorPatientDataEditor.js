@@ -4,7 +4,7 @@ import CloseIcon from './icons/closeIcon.png';
 import AuthContext from '../../../auth/authContext';
 import { Navigate } from 'react-router-dom';
 
-const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, doctorsPatientsData, setDoctorsPatientsData}) => {
+const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, doctorsPatientsData, setDoctorsPatientsData, searchPatientsResults, setSearchPatientsResults}) => {
     const { refresh, setIsAuthenticated, redirectTo, setRedirectTo } = useContext(AuthContext);
     const [dataLoading, setDataLoading] = useState(true);
     const [patientData, setPatientData] = useState({});
@@ -242,11 +242,21 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
                         if (patient.id === updatedPatientData.id) {
                             return updatedPatientData;
                         }
-
                         return patient;
                     });
-                    
+
+                    let updatedSearchPatientsResults = null;
+                    if (searchPatientsResults) {
+                        updatedSearchPatientsResults = searchPatientsResults.map(patient => {
+                            if (patient.id === updatedPatientData.id) {
+                                return updatedPatientData;
+                            }
+                            return patient;
+                        });
+                    }
+
                     setDoctorsPatientsData(updatedDoctorsPatientsData);
+                    setSearchPatientsResults(updatedSearchPatientsResults);
                     setPatientData(updatedPatientData);
                     closePatientDataEditorHandle();
                 } catch (error) {
@@ -258,11 +268,21 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
                     if (patient.id === updatedPatientData.id) {
                         return updatedPatientData;
                     }
-
                     return patient;
                 });
-                
+
+                let updatedSearchPatientsResults = null;
+                if (searchPatientsResults) {
+                    updatedSearchPatientsResults = searchPatientsResults.map(patient => {
+                        if (patient.id === updatedPatientData.id) {
+                            return updatedPatientData;
+                        }
+                        return patient;
+                    });
+                }
+
                 setDoctorsPatientsData(updatedDoctorsPatientsData);
+                setSearchPatientsResults(updatedSearchPatientsResults);
                 setPatientData(updatedPatientData);
                 closePatientDataEditorHandle();
             }
@@ -335,4 +355,3 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
 }
   
 export default DoctorPatientDataEditor;
-

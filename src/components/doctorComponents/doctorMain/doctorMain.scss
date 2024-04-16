@@ -229,5 +229,16 @@
                 }
             }
         }
+
+        .notFoundTextError {
+            color: grey;
+            background-color: app.$white-color;
+            width: 100%;
+            margin: 0;
+            padding: 20px 0px;
+            font-size: clamp(1rem, 2vw, 1.8rem) !important;
+            text-align: center;
+            border-bottom: 3px solid app.$dark-blue-color;
+        }
     }
 }
