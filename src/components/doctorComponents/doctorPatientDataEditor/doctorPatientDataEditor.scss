@@ -1,6 +1,6 @@
 @use '../../app/app.scss';
 
-.loader {
+.dataEditorLoader {
     display: grid;
     width: 50px;
     aspect-ratio: 1;
@@ -8,8 +8,9 @@
     border-radius: 50%;
     border-right-color: app.$dark-blue-color;
     animation: infiniteRotating 1s infinite linear;
-    margin-top: calc(20% - 20px);
-    margin-left: calc(50% - 30px);
+    margin-top: calc(30% - 30px);
+    margin-left: calc(50% - 35px);
+    margin-bottom: 100px;
 
     &::before, &::after {
         content: "";
@@ -47,7 +48,7 @@
     transform: translate(-50%, -50%);
     z-index: 2;
     font-family: app.$basic-font-family;
-    font-size: clamp(0.7rem, 1.6vw, 1.3rem) !important;
+    font-size: clamp(0.7rem, 1.6vw, 1.3rem);
     overflow-y: auto;
     padding-bottom: 30px;
     overflow-x: hidden;
@@ -84,12 +85,27 @@
         .patientDataLabel {
             color: grey;
             width: calc(80% - 40px);
+            max-width: 100%;
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: clamp(0.9rem, 1.3vw, 1.3rem) !important;
         }
 
         .patidentDataInput {
             width: calc(80% - 40px);
             padding: 5px 10px;
-            font-size: clamp(0.7rem, 1.6vw, 1.3rem) !important;
+            font-family: app.$basic-font-family;
+            border: 2px solid app.$dark-blue-color;
+            border-radius: 5px;
+            background-color: app.$white-color;
+            color: app.$dark-font-color;
+        }
+
+        .patidentDataSelect {
+            width: calc(80% - 16px);
+            padding: 5px 10px;
+
+            font-family: app.$basic-font-family;
             border: 2px solid app.$dark-blue-color;
             border-radius: 5px;
             background-color: app.$white-color;

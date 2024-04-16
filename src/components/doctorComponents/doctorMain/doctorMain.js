@@ -164,6 +164,11 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
             localStorage.removeItem('refreshToken');
         };
 
+        const confirmation = window.confirm("Вы уверены, что хотите удалить пациента?");
+        if (!confirmation) {
+            return;
+        }
+
         const currentUserData = localStorage.getItem('currentUserData');
         let accessToken = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
@@ -293,7 +298,12 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                     {doctorsPatientsData.map(patient => (
                         <React.Fragment key={patient.id}>
                             {isMenuOpened && <div className='blurBackground'></div>}
-                            {isMenuOpened && <DoctorPatientDataEditor closeMenuSetter={closePatientDataEditorHandle} patientId={selectedPatientId}/>}
+                            {isMenuOpened && <DoctorPatientDataEditor
+                                                closePatientDataEditorHandle={closePatientDataEditorHandle}
+                                                patientId={selectedPatientId}
+                                                doctorsPatientsData={doctorsPatientsData}
+                                                setDoctorsPatientsData={setDoctorsPatientsData}
+                                                />}
                             <div className='doctorPatientWrapper'>
                                 <Link to={`/patient/${patient.IIN}/account`}>
                                     <div className='doctorPatientDataBox'>

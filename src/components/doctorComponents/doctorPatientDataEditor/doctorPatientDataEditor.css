@@ -8,7 +8,7 @@ html, body {
   overflow-x: hidden;
 }
 
-.loader {
+.dataEditorLoader {
   display: grid;
   width: 50px;
   aspect-ratio: 1;
@@ -16,10 +16,11 @@ html, body {
   border-radius: 50%;
   border-right-color: #00416A;
   animation: infiniteRotating 1s infinite linear;
-  margin-top: calc(20% - 20px);
-  margin-left: calc(50% - 30px);
+  margin-top: calc(30% - 30px);
+  margin-left: calc(50% - 35px);
+  margin-bottom: 100px;
 }
-.loader::before, .loader::after {
+.dataEditorLoader::before, .dataEditorLoader::after {
   content: "";
   grid-area: 1/1;
   margin: 2px;
@@ -27,7 +28,7 @@ html, body {
   border-radius: 50%;
   animation: infiniteRotating 2s infinite;
 }
-.loader::after {
+.dataEditorLoader::after {
   margin: 8px;
   animation-duration: 3s;
 }
@@ -52,7 +53,7 @@ html, body {
   transform: translate(-50%, -50%);
   z-index: 2;
   font-family: "IBM Plex Sans", sans-serif;
-  font-size: clamp(0.7rem, 1.6vw, 1.3rem) !important;
+  font-size: clamp(0.7rem, 1.6vw, 1.3rem);
   overflow-y: auto;
   padding-bottom: 30px;
   overflow-x: hidden;
@@ -86,11 +87,24 @@ html, body {
 .patientDataEditorBox .patidentDataInputsWrapper .patientDataLabel {
   color: grey;
   width: calc(80% - 40px);
+  max-width: 100%;
+  text-align: center;
+  margin-bottom: 5px;
+  font-size: clamp(0.9rem, 1.3vw, 1.3rem) !important;
 }
 .patientDataEditorBox .patidentDataInputsWrapper .patidentDataInput {
   width: calc(80% - 40px);
   padding: 5px 10px;
-  font-size: clamp(0.7rem, 1.6vw, 1.3rem) !important;
+  font-family: "IBM Plex Sans", sans-serif;
+  border: 2px solid #00416A;
+  border-radius: 5px;
+  background-color: #ebebeb;
+  color: #202020;
+}
+.patientDataEditorBox .patidentDataInputsWrapper .patidentDataSelect {
+  width: calc(80% - 16px);
+  padding: 5px 10px;
+  font-family: "IBM Plex Sans", sans-serif;
   border: 2px solid #00416A;
   border-radius: 5px;
   background-color: #ebebeb;
