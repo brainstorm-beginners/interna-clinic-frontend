@@ -382,7 +382,9 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                                                 patientId={selectedPatientId}
                                                 doctorsPatientsData={doctorsPatientsData}
                                                 setDoctorsPatientsData={setDoctorsPatientsData}
-                                                />}
+                                                searchPatientsResults={searchPatientsResults}
+                                                setSearchPatientsResults={setSearchPatientsResults}
+                                            />}
                             <div className='doctorPatientWrapper'>
                                 <Link to={`/patient/${patient.IIN}/account`}>
                                     <div className='doctorPatientDataBox'>

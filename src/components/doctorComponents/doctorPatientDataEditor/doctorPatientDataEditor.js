@@ -212,8 +212,8 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
             let response = await fetch(`http://localhost:8080/api/v1/patients/${patientId}`, {
                 method: 'PUT',
                 headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + accessToken
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
                 },
                 body: JSON.stringify({
                 ...patientData,
@@ -223,13 +223,14 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
         
             if (!response.ok && response.status === 401) {
                 try {
+                    console.log("GOT AN ERROR. REFRESHING.")
                     await refresh();
                     accessToken = localStorage.getItem('accessToken');
                     response = await fetch(`http://localhost:8080/api/v1/patients/${patientId}`, {
                         method: 'PUT',
                         headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + accessToken
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + accessToken
                         },
                         body: JSON.stringify({
                         ...patientData,
@@ -237,10 +238,10 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
                         })
                     });
 
-                    const updatedPatientData = await response.json();
+                    const updatedPatientDataRecieved = await response.json();
                     const updatedDoctorsPatientsData = doctorsPatientsData.map(patient => {
-                        if (patient.id === updatedPatientData.id) {
-                            return updatedPatientData;
+                        if (patient.id === updatedPatientDataRecieved.id) {
+                            return updatedPatientDataRecieved;
                         }
                         return patient;
                     });
@@ -248,8 +249,8 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
                     let updatedSearchPatientsResults = null;
                     if (searchPatientsResults) {
                         updatedSearchPatientsResults = searchPatientsResults.map(patient => {
-                            if (patient.id === updatedPatientData.id) {
-                                return updatedPatientData;
+                            if (patient.id === updatedPatientDataRecieved.id) {
+                                return updatedPatientDataRecieved;
                             }
                             return patient;
                         });
@@ -257,16 +258,18 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
 
                     setDoctorsPatientsData(updatedDoctorsPatientsData);
                     setSearchPatientsResults(updatedSearchPatientsResults);
-                    setPatientData(updatedPatientData);
+                    setPatientData(updatedPatientDataRecieved);
                     closePatientDataEditorHandle();
                 } catch (error) {
+                    const error_text = JSON.stringify(error);
+                    console.log("SOMETHING WENT WRONG HERE 1: " + error_text)
                     handleLogout();
                 }
             } else {
-                const updatedPatientData = await response.json();
+                const updatedPatientDataRecieved = await response.json();
                 const updatedDoctorsPatientsData = doctorsPatientsData.map(patient => {
-                    if (patient.id === updatedPatientData.id) {
-                        return updatedPatientData;
+                    if (patient.id === updatedPatientDataRecieved.id) {
+                        return updatedPatientDataRecieved;
                     }
                     return patient;
                 });
@@ -274,8 +277,8 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
                 let updatedSearchPatientsResults = null;
                 if (searchPatientsResults) {
                     updatedSearchPatientsResults = searchPatientsResults.map(patient => {
-                        if (patient.id === updatedPatientData.id) {
-                            return updatedPatientData;
+                        if (patient.id === updatedPatientDataRecieved.id) {
+                            return updatedPatientDataRecieved;
                         }
                         return patient;
                     });
@@ -283,11 +286,13 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
 
                 setDoctorsPatientsData(updatedDoctorsPatientsData);
                 setSearchPatientsResults(updatedSearchPatientsResults);
-                setPatientData(updatedPatientData);
+                setPatientData(updatedPatientDataRecieved);
                 closePatientDataEditorHandle();
             }
         } catch (error) {
-          console.log("An error occurred while trying to update the patient data.")
+            const error_text = JSON.stringify(error);
+            console.log("SOMETHING WENT WRONG HERE 2: " + error_text)
+            console.log("An error occurred while trying to update the patient data.")
         }
     };      
 
