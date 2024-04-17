@@ -10,6 +10,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
     const [patientData, setPatientData] = useState({});
     const [updatedPatientData, setUpdatedPatientData] = useState(patientData);
     const [newPassword, setNewPassword] = useState('');
+
     const fieldTranslations = {
         "AAT": "АСТ (абсолютное значение, ЕД/л или мкмоль/л)",
         "AAT_upper": "АСТ (количество верхних границ норм)",
@@ -65,6 +66,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
         "was_involved_in_car_accidents": "Был/а ли участником ДТП за последний год?",
         "weight": "Вес"
     };
+    
     const dbEnumFieldsOptions = {
         gender: ['Мужской', 'Женский'],
         ethnicity: ['Азиат', 'Европеец'],
@@ -90,6 +92,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
         medicines: ['Прием бензодиазепин', 'Прием опиодов', 'ИПП', 'Другое'],
         renal_impairment: ['Да', 'Нет'],
         bad_habits: ['Табакокурение', 'Злоупотребление алкоголем', 'Нет', 'Другое'],
+        CPU: ['Имелась', 'Отсутствовала']
     };  
       
 

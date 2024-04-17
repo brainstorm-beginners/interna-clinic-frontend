@@ -117,7 +117,7 @@
         width: max-content;
         border-radius: 5px;
         background-color: app.$white-color;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
         border: 2px solid app.$dark-blue-color;
         margin-left: auto;
         margin-right: auto;
@@ -143,6 +143,19 @@
                 cursor: pointer;
             }
         }
+    }
+
+    .addPatientButton {
+        display: block;
+        padding: 10px 15px;
+        background-color: app.$white-color;
+        border-radius: 5px;
+        border: 3px solid green;
+        color: green;
+        font-size: clamp(0.7rem, 1.2vw, 1rem) !important;
+        margin-bottom: 50px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .doctorPatientsTable {

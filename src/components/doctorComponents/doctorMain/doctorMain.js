@@ -7,6 +7,7 @@ import SearchButtonIcon from './icons/searchIcon.png'
 import { Link, Navigate } from "react-router-dom";
 import React, { useContext, useEffect, useState } from 'react';
 import DoctorPatientDataEditor from '../doctorPatientDataEditor/doctorPatientDataEditor';
+import DoctorAddPatientMenu from '../doctorAddPatientMenu/doctorAddPatientMenu';
 
 const DoctorMain = ({doctorIIN, openedSection}) => {
     const { refresh, setIsAuthenticated, redirectTo, setRedirectTo } = useContext(AuthContext);
@@ -14,7 +15,8 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
     const [doctorData, setDoctorData] = useState({});
     const [doctorsPatientsData, setDoctorsPatientsData] = useState([])
     const [selectedPatientId, setSelectedPatientId] = useState(null);
-    const [isMenuOpened, setIsMenuOpened] = useState(false);
+    const [isDataEditorMenuOpened, setIsMenuOpened] = useState(false);
+    const [isAddPatientMenuOpened, setIsAddPatientMenuOpened] = useState(false);
     const [searchPatientsResults, setSearchPatientsResults] = useState(null);
 
     useEffect(() => {
@@ -225,18 +227,6 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
         }
     };    
 
-    const openPatientDataEditorHandle = (patientId) => {
-        setSelectedPatientId(patientId);
-        setIsMenuOpened(true);
-        document.documentElement.style.overflowY = 'hidden';
-    }
-
-    const closePatientDataEditorHandle = () => {
-        setSelectedPatientId(null);
-        setIsMenuOpened(false);
-        document.documentElement.style.overflowY = 'auto';
-    }
-
     const searchPatientByIINButtonHandle = async () => {
         const handleLogout = () => {
             setIsAuthenticated(false);
@@ -304,7 +294,29 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
             console.log("TEST: " + searchPatientsResults)
             console.log("An error occurred while trying to search for the patient.")
         }
-    };    
+    };
+    
+    const openPatientDataEditorHandle = (patientId) => {
+        setSelectedPatientId(patientId);
+        setIsMenuOpened(true);
+        document.documentElement.style.overflowY = 'hidden';
+    }
+
+    const closePatientDataEditorHandle = () => {
+        setSelectedPatientId(null);
+        setIsMenuOpened(false);
+        document.documentElement.style.overflowY = 'auto';
+    }
+
+    const openAddPatientMenuHandle = () => {
+        setIsAddPatientMenuOpened(true);
+        document.documentElement.style.overflowY = 'hidden';
+    }
+
+    const closeAddPatientMenuHandle = () => {
+        setIsAddPatientMenuOpened(false);
+        document.documentElement.style.overflowY = 'auto';
+    }
 
     if (redirectTo) {
         return <Navigate to={redirectTo} replace />;
@@ -372,12 +384,23 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                     />
                     <img src={SearchButtonIcon} className='searchButton' alt='' onClick={searchPatientByIINButtonHandle}></img>
                 </div>
+
+                <button className='addPatientButton' onClick={openAddPatientMenuHandle}>ДОБАВИТЬ ПАЦИЕНТА</button>
         
                 <div className='doctorPatientsTable'>
                     {searchPatientsResults === null && doctorsPatientsData.map(patient => (
                         <React.Fragment key={patient.id}>
-                            {isMenuOpened && <div className='blurBackground'></div>}
-                            {isMenuOpened && <DoctorPatientDataEditor
+                            {isAddPatientMenuOpened && <div className='blurBackground'></div>}
+                            {isAddPatientMenuOpened && <DoctorAddPatientMenu
+                                                closeAddPatientMenuHandle={closeAddPatientMenuHandle}
+                                                doctorId={doctorData.id}
+                                                doctorsPatientsData={doctorsPatientsData}
+                                                setDoctorsPatientsData={setDoctorsPatientsData}
+                                                searchPatientsResults={searchPatientsResults}
+                                                setSearchPatientsResults={setSearchPatientsResults}
+                                            />}
+                            {isDataEditorMenuOpened && <div className='blurBackground'></div>}
+                            {isDataEditorMenuOpened && <DoctorPatientDataEditor
                                                 closePatientDataEditorHandle={closePatientDataEditorHandle}
                                                 patientId={selectedPatientId}
                                                 doctorsPatientsData={doctorsPatientsData}
@@ -404,8 +427,8 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
 
                     {searchPatientsResults && searchPatientsResults.length > 0 && searchPatientsResults[0].detail !== "Patient not found" && searchPatientsResults.map(patient => (
                         <React.Fragment key={patient.id}>
-                        {isMenuOpened && <div className='blurBackground'></div>}
-                        {isMenuOpened && <DoctorPatientDataEditor
+                        {isDataEditorMenuOpened && <div className='blurBackground'></div>}
+                        {isDataEditorMenuOpened && <DoctorPatientDataEditor
                                             closePatientDataEditorHandle={closePatientDataEditorHandle}
                                             patientId={selectedPatientId}
                                             doctorsPatientsData={doctorsPatientsData}
