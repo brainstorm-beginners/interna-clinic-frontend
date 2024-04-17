@@ -237,25 +237,20 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': 'Bearer ' + accessToken
-                        }
-                    });
-                    
-                    const updatedPatientDataRecieved = await response.json();
-                    const updatedDoctorsPatientsData = doctorsPatientsData.map(patient => {
-                        if (patient.id === updatedPatientDataRecieved.id) {
-                            return updatedPatientDataRecieved;
-                        }
-                        return patient;
+                        },
+                        body: JSON.stringify({
+                            ...patientToAddFinalData
+                        })
                     });
 
                     closeAddPatientMenuHandle();
-                    window.location.reload();
+                    window.location.reload(); 
                 } catch (error) {
                     handleLogout();
                 }
             } else {
                 switch (response.status) {
-                    case 402:
+                    case 422:
                         setErrorMessage('Ошибка при добавлении пациента. Заполните все поля.');
                         break;
                     case 409:
@@ -263,17 +258,8 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                         break;
                     default:
                         closeAddPatientMenuHandle();
-                }
-
-                const updatedPatientDataRecieved = await response.json();
-                const updatedDoctorsPatientsData = doctorsPatientsData.map(patient => {
-                    if (patient.id === updatedPatientDataRecieved.id) {
-                        return updatedPatientDataRecieved;
-                    }
-                    return patient;
-                });
-
-                window.location.reload();             
+                        window.location.reload(); 
+                }            
             }
         } catch (error) {
             console.log("An error ocured while trying to fetch the patient data.")
