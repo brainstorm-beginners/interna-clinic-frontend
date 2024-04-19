@@ -42,6 +42,42 @@ html, body {
   height: max-content;
   padding: 0px 0px 50px 0px;
 }
+.patientMain .sectionNavigation {
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 30px;
+  padding: 0px 20px;
+  margin-bottom: 70px;
+}
+.patientMain .sectionNavigation .sectionNavigation__element {
+  display: flex;
+  flex-grow: 1;
+  flex-basis: 130px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  list-style: none;
+  padding: 15px 20px;
+  border: 2px solid #00416A;
+  border-radius: 10px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: clamp(0.5rem, 1.4vw, 1rem) !important;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+       user-select: none;
+  transition: 0.2s all ease-in-out;
+}
+.patientMain .sectionNavigation .sectionNavigation__element:hover {
+  cursor: pointer;
+  transform: scale(1.03);
+}
+@media only screen and (max-width: 700px) {
+  .patientMain .sectionNavigation .sectionNavigation__element {
+    font-size: clamp(0.8rem, 1.5vw, 1.3rem) !important;
+  }
+}
 .patientMain .dataSectionTitle {
   font-family: "IBM Plex Sans", sans-serif;
   font-size: clamp(0.9rem, 1.8vw, 1.5rem) !important;
@@ -94,4 +130,12 @@ html, body {
   border-radius: 10px;
   border: 3px solid #00416A;
   font-size: clamp(0.8rem, 1.6vw, 1.3rem) !important;
+}
+.patientMain .patientDataTogetherWrapper {
+  width: 100%;
+  display: flex;
+  gap: 50px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-family: "IBM Plex Sans", sans-serif;
 }/*# sourceMappingURL=patientMain.css.map */

@@ -111,6 +111,12 @@
             background-color: app.$white-color;
             color: app.$dark-font-color;
         }
+
+        .patidentDataCheckBoxesWrapper {
+            max-width: 100%;
+            border: 2px solid transparent;
+            padding: 25px;
+        }   
     }
 
     .patientDataSaveButton {

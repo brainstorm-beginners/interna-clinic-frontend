@@ -139,22 +139,46 @@ const PatientMain = ({patientIIN, openedSection}) => {
 
         fetchPatientData();
         fetchDoctorData(patientData.doctor_id);
-    }, [patientData.doctor_id, patientIIN, refresh, setIsAuthenticated, setRedirectTo]);    
+    }, [patientData.doctor_id, patientIIN, refresh, setIsAuthenticated, setRedirectTo]);
+    
+    const navigateTo = (targetHTMLelementID) => {
+        const element = document.getElementById(targetHTMLelementID);
+        if (element) {
+            const elementRect = element.getBoundingClientRect();
+            const absoluteElementTop = elementRect.top + window.pageYOffset;
+            const middle = absoluteElementTop - (window.innerHeight / 4);
+            window.scrollTo({
+                top: middle,
+                behavior: 'smooth'
+            });
+        }
+    };    
 
     if (redirectTo) {
         return <Navigate to={redirectTo} replace />;
-    }
+    };
     
     if (dataLoading) {
         return (
             <div className='loader'></div>
         );
-    }
+    };
 
     if (openedSection === 'account') {
         return (
             <div className='patientMain'>
-                <h1 className='dataSectionTitle'>Личные данные</h1>
+                <ul className='sectionNavigation'>
+                    <li className='sectionNavigation__element' onClick={() => navigateTo('demographicData')}>Демографические данные</li>
+                    <li className='sectionNavigation__element' onClick={() => navigateTo('doctorData')}>Лечащий врач</li>
+                    <li className='sectionNavigation__element' onClick={() => navigateTo('etiologyData')}>Медицинские данные (Этиология)</li>
+                    <li className='sectionNavigation__element' onClick={() => navigateTo('laboratoryResearchData')}>Лабораторные исследования</li>
+                    <li className='sectionNavigation__element' onClick={() => navigateTo('fibrosisData')}>Стадия заболевания / Фиброз / Шкалы</li>
+                    <li className='sectionNavigation__element' onClick={() => navigateTo('anamnesisData')}>Анамнез пациента</li>
+                    <li className='sectionNavigation__element' onClick={() => navigateTo('provokingFactsData')}>Провоцирующие факторы</li>
+                    <li className='sectionNavigation__element' onClick={() => navigateTo('commitmentData')}>Приверженность</li>
+                </ul>
+
+                <h1 className='dataSectionTitle' id='demographicData'>Демографические данные</h1>
                 <hr className='dataSectionDividerLineStart'/>
                 <div className='personalDataWrapper'>
                     <div className='patientDataWrapper'>
@@ -190,40 +214,6 @@ const PatientMain = ({patientIIN, openedSection}) => {
                         <div className='patientDataBox'>{patientData.region}</div>
                     </div>
                     <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>Уровень образования</div>
-                        <div className='patientDataBox'>{patientData.education}</div>
-                    </div>
-                    <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>Семейное положение</div>
-                        <div className='patientDataBox'>{patientData.marital_status}</div>
-                    </div>
-                    <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>Водит ли транспортное средство</div>
-                        <div className='patientDataBox'>{patientData.driving_status}</div>
-                    </div>
-                    <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>Описание работы</div>
-                        <div className='patientDataBox'>{patientData.job_description}</div>
-                    </div>
-                </div>
-
-                <h1 className='dataSectionTitle' style={{marginTop: '100px'}}>Лечащий врач</h1>
-                <hr className='dataSectionDividerLineStart'/>
-                <div className='personalDataWrapper'>
-                    <div className='patientDoctorDataWrapper'>
-                        <div className='patientDoctorDataLabel'>ФИО врача</div>
-                        <div className='patientDoctorDataBox'>{doctorData.last_name} {doctorData.first_name} {doctorData.middle_name}</div>
-                    </div>
-                    <div className='patientDoctorDataWrapper'>
-                        <div className='patientDoctorDataLabel'>Квалификация</div>
-                        <div className='patientDoctorDataBox'>{doctorData.qualification}</div>
-                    </div>
-                </div>
-
-                <h1 className='dataSectionTitle' style={{marginTop: '100px'}}>Медицинские данные</h1>
-                <hr className='dataSectionDividerLineStart'/>
-                <div className='medicalDataWrapper'>
-                    <div className='patientDataWrapper'>
                         <div className='patientDataLabel'>Рост</div>
                         <div className='patientDataBox'>{patientData.height}см</div>
                     </div>
@@ -236,8 +226,46 @@ const PatientMain = ({patientIIN, openedSection}) => {
                         <div className='patientDataBox'>{patientData.BMI}</div>
                     </div>
                     <div className='patientDataWrapper'>
+                        <div className='patientDataLabel'>Уровень образования</div>
+                        <div className='patientDataBox'>{patientData.education}</div>
+                    </div>
+                    <div className='patientDataWrapper'>
+                        <div className='patientDataLabel'>Семейное положение</div>
+                        <div className='patientDataBox'>{patientData.marital_status}</div>
+                    </div>
+                    <div className='patientDataWrapper'>
+                        <div className='patientDataLabel'>Описание работы</div>
+                        <div className='patientDataBox'>{patientData.job_description}</div>
+                    </div>
+                    <div className='patientDataWrapper'>
+                        <div className='patientDataLabel'>Водит ли транспортное средство</div>
+                        <div className='patientDataBox'>{patientData.driving_status}</div>
+                    </div>
+                    <div className='patientDataWrapper'>
+                        <div className='patientDataLabel'>Был/а ли участником ДТП за последний год?</div>
+                        <div className='patientDataBox'>{patientData.was_involved_in_car_accidents}</div>
+                    </div>
+                </div>
+
+                <h1 className='dataSectionTitle' style={{marginTop: '100px'}} id='doctorData'>Лечащий врач</h1>
+                <hr className='dataSectionDividerLineStart'/>
+                <div className='personalDataWrapper'>
+                    <div className='patientDoctorDataWrapper'>
+                        <div className='patientDoctorDataLabel'>ФИО врача</div>
+                        <div className='patientDoctorDataBox'>{doctorData.last_name} {doctorData.first_name} {doctorData.middle_name}</div>
+                    </div>
+                    <div className='patientDoctorDataWrapper'>
+                        <div className='patientDoctorDataLabel'>Квалификация</div>
+                        <div className='patientDoctorDataBox'>{doctorData.qualification}</div>
+                    </div>
+                </div>
+
+                <h1 className='dataSectionTitle' style={{marginTop: '100px'}} id='etiologyData'>Медицинские данные (Этиология)</h1>
+                <hr className='dataSectionDividerLineStart'/>
+                <div className='medicalDataWrapper'>
+                    <div className='patientDataWrapper'>
                         <div className='patientDataLabel'>Цирроз печени в исходе</div>
-                        <div className='patientDataBox'>{patientData.cirrhosis}</div>
+                        <div className='patientDataBox'>{patientData.cirrhosis ? patientData.cirrhosis.join(', '): 'Загрузка...'}</div>
                     </div>
                     <div className='patientDataWrapper'>
                         <div className='patientDataLabel'>Известная продолжительность болезни печени (в годах)</div>
@@ -245,7 +273,7 @@ const PatientMain = ({patientIIN, openedSection}) => {
                     </div>
                 </div>
 
-                <h1 className='dataSectionTitle' style={{marginTop: '100px'}}>Лабораторные исследования</h1>
+                <h1 className='dataSectionTitle' style={{marginTop: '100px'}} id='laboratoryResearchData'>Лабораторные исследования</h1>
                 <hr className='dataSectionDividerLineStart'/>
                 <div className='medicalDataWrapper'>
                     <div className='patientDataWrapper'>
@@ -256,21 +284,25 @@ const PatientMain = ({patientIIN, openedSection}) => {
                         <div className='patientDataLabel'>Уровень гемоглобина</div>
                         <div className='patientDataBox'>{patientData.hemoglobin_level}</div>
                     </div>
-                    <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>АЛТ (абсолютное значение, ЕД/л или мкмоль/л)</div>
-                        <div className='patientDataBox'>{patientData.ALT}</div>
+                    <div className='patientDataTogetherWrapper'>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>АЛТ (абсолютное значение, ЕД/л или мкмоль/л)</div>
+                            <div className='patientDataBox'>{patientData.ALT}</div>
+                        </div>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Единица измерения АЛТ</div>
+                            <div className='patientDataBox'>{patientData.ALT_unit}</div>
+                        </div>
                     </div>
-                    <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>АЛТ (количество верхних границ норм)</div>
-                        <div className='patientDataBox'>{patientData.ALT_upper}</div>
-                    </div>
-                    <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>АСТ (абсолютное значение, ЕД/л или мкмоль/л)</div>
-                        <div className='patientDataBox'>{patientData.AAT}</div>
-                    </div>
-                    <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>АСТ (количество верхних границ норм)</div>
-                        <div className='patientDataBox'>{patientData.AAT_upper}</div>
+                    <div className='patientDataTogetherWrapper'>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>АСТ (абсолютное значение, ЕД/л или мкмоль/л)</div>
+                            <div className='patientDataBox'>{patientData.AAT}</div>
+                        </div>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Единица измерения АСТ</div>
+                            <div className='patientDataBox'>{patientData.AAT_unit}</div>
+                        </div>
                     </div>
                     <div className='patientDataWrapper'>
                         <div className='patientDataLabel'>Билирубин, мкмоль/л</div>
@@ -302,7 +334,7 @@ const PatientMain = ({patientIIN, openedSection}) => {
                     </div>
                 </div>
 
-                <h1 className='dataSectionTitle' style={{marginTop: '100px'}}>Стадия заболевания / Фиброз / Шкалы</h1>
+                <h1 className='dataSectionTitle' style={{marginTop: '100px'}} id='fibrosisData'>Стадия заболевания / Фиброз / Шкалы</h1>
                 <hr className='dataSectionDividerLineStart'/>
                 <div className='medicalDataWrapper'>
                     <div className='patientDataWrapper'>
@@ -329,38 +361,112 @@ const PatientMain = ({patientIIN, openedSection}) => {
                         <div className='patientDataLabel'>Тест Рейтана</div>
                         <div className='patientDataBox'>{patientData.reitan_test}</div>
                     </div>
+                    <div className='patientDataTogetherWrapper'>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Тип энцефалопатии</div>
+                            <div className='patientDataBox'>{patientData.type_of_encephalopathy}</div>
+                        </div>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Степень энцефалопатии</div>
+                            <div className='patientDataBox'>{patientData.degree_of_encephalopathy}</div>
+                        </div>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Процесс энцефалопатии</div>
+                            <div className='patientDataBox'>{patientData.process_of_encephalopathy}</div>
+                        </div>
+                    </div>
                     <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>Вид энц</div>
-                        <div className='patientDataBox'>{patientData.view_ents}</div>
+                        <div className='patientDataLabel'>Наличие провоцирующих факторов</div>
+                        <div className='patientDataBox'>{patientData.presence_of_precipitating_factors}</div>
                     </div>
                 </div>
-
-                <h1 className='dataSectionTitle' style={{marginTop: '100px'}}>Анамнез пациента</h1>
+                <h1 className='dataSectionTitle' style={{marginTop: '100px'}} id='anamnesisData'>Анамнез пациента</h1>
                 <hr className='dataSectionDividerLineStart'/>
                 <div className='medicalDataWrapper'>
                     <div className='patientDataWrapper'>
                         <div className='patientDataLabel'>Сопутствующие заболевания</div>
-                        <div className='patientDataBox'>{patientData.comorbidities}</div>
+                        <div className='patientDataBox'>{patientData.comorbidities ? patientData.comorbidities.join(', ') : 'Загрузка...'}</div>
                     </div>
-                    <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>Наличие гепатоцеллюлярной карциномы</div>
-                        <div className='patientDataBox'>{patientData.hepatocellular_carcinoma}</div>
+                    <div className='patientDataTogetherWrapper'>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Был/а ли ПЛАНОВО госпитализирован/а с заболеваниями печени?</div>
+                            <div className='patientDataBox'>{patientData.was_planned_hospitalized_with_liver_diseases}</div>
+                        </div>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Кол-во ПЛАНОВЫХ госпитализаций с заболеваниями печени</div>
+                            <div className='patientDataBox'>{patientData.number_of_planned_hospitalizations_with_liver_diseases}</div>
+                        </div>
                     </div>
-                    <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>Был/а ли госпитализирован/а за 2023-2024</div>
-                        <div className='patientDataBox'>{patientData.was_hospitalized}</div>
+                    <div className='patientDataTogetherWrapper'>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Был/а ли ПЛАНОВО госпитализирован/а БЕЗ заболеваний печени?</div>
+                            <div className='patientDataBox'>{patientData.was_planned_hospitalized_without_liver_diseases}</div>
+                        </div>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Кол-во ПЛАНОВЫХ госпитализаций БЕЗ заболеваний печени</div>
+                            <div className='patientDataBox'>{patientData.number_of_planned_hospitalizations_without_liver_diseases}</div>
+                        </div>
+                    </div>
+                    <div className='patientDataTogetherWrapper'>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Был/а ли ЭКСТРЕННО госпитализирован/а с заболеваниями печени?</div>
+                            <div className='patientDataBox'>{patientData.was_emergency_hospitalized_with_liver_diseases}</div>
+                        </div>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Кол-во ЭКСТРЕННЫХ госпитализаций с заболеваниями печени</div>
+                            <div className='patientDataBox'>{patientData.number_of_emergency_hospitalizations_with_liver_diseases}</div>
+                        </div>
+                    </div>
+                    <div className='patientDataTogetherWrapper'>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Был/а ли ЭКСТРЕННО госпитализирован/а БЕЗ заболеваний печени?</div>
+                            <div className='patientDataBox'>{patientData.was_emergency_hospitalized_without_liver_diseases}</div>
+                        </div>
+                        <div className='patientDataWrapper'>
+                            <div className='patientDataLabel'>Кол-во ЭКСТРЕННЫХ госпитализаций БЕЗ заболеваний печени</div>
+                            <div className='patientDataBox'>{patientData.number_of_emergency_hospitalizations_without_liver_diseases}</div>
+                        </div>
                     </div>
                     <div className='patientDataWrapper'>
                         <div className='patientDataLabel'>Получал/а ли травмы (2023-2024)</div>
                         <div className='patientDataBox'>{patientData.was_injured}</div>
                     </div>
                     <div className='patientDataWrapper'>
+                        <div className='patientDataLabel'>Наличие гепатоцеллюлярной карциномы</div>
+                        <div className='patientDataBox'>{patientData.hepatocellular_carcinoma}</div>
+                    </div>
+                    
+                    <div className='patientDataWrapper'>
+                        <div className='patientDataLabel'>Переносил/а ли инфекционные заболевания (2023-2024)</div>
+                        <div className='patientDataBox'>{patientData.previous_infectious_diseases}</div>
+                    </div>
+                    <div className='patientDataWrapper'>
+                        <div className='patientDataLabel'>Дегидратация</div>
+                        <div className='patientDataBox'>{patientData.dehydration}</div>
+                    </div>
+                    <div className='patientDataWrapper'>
+                        <div className='patientDataLabel'>Портосистемное шунтирование</div>
+                        <div className='patientDataBox'>{patientData.portosystemic_bypass_surgery}</div>
+                    </div>
+                    <div className='patientDataWrapper'>
+                        <div className='patientDataLabel'>Приверженность к лечению по ЦП</div>
+                        <div className='patientDataBox'>{patientData.CPU}</div>
+                    </div>
+                    <div className='patientDataWrapper'>
+                        <div className='patientDataLabel'>Список принимаемых ЛС по ПЭ </div>
+                        <div className='patientDataBox'>{patientData.accepted_PE_medications}</div>
+                    </div>
+                </div>
+                <h1 className='dataSectionTitle' style={{marginTop: '100px'}} id='provokingFactsData'>Провоцирующие факторы</h1>
+                <hr className='dataSectionDividerLineStart'/>
+                <div className='medicalDataWrapper'>
+                    <div className='patientDataWrapper'>
                         <div className='patientDataLabel'>ЖКК (2023-2024)</div>
                         <div className='patientDataBox'>{patientData.GIB}</div>
                     </div>
                     <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>Переносил/а ли инфекционные заболевания (2023-2024)</div>
-                        <div className='patientDataBox'>{patientData.previous_infectious_diseases}</div>
+                        <div className='patientDataLabel'>Перенесенные инфекционные заболевания за последний год</div>
+                        <div className='patientDataBox'>{patientData.previous_infectious_diseases ? patientData.previous_infectious_diseases.join(', ') : 'Загрузка...'}</div>
                     </div>
                     <div className='patientDataWrapper'>
                         <div className='patientDataLabel'>Характер стула</div>
@@ -380,23 +486,31 @@ const PatientMain = ({patientIIN, openedSection}) => {
                     </div>
                     <div className='patientDataWrapper'>
                         <div className='patientDataLabel'>ЛС</div>
-                        <div className='patientDataBox'>{patientData.medicines}</div>
+                        <div className='patientDataBox'>{patientData.medicines ? patientData.medicines.join(', ') : 'Загрузка...'}</div>
                     </div>
                     <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>Почечная недостаточноть (ОПП, ХБП, ГРС)</div>
+                        <div className='patientDataLabel'>Почечная недостаточноть</div>
                         <div className='patientDataBox'>{patientData.renal_impairment}</div>
                     </div>
                     <div className='patientDataWrapper'>
                         <div className='patientDataLabel'>Вредные привычки</div>
                         <div className='patientDataBox'>{patientData.bad_habits}</div>
                     </div>
+                </div>
+                <h1 className='dataSectionTitle' style={{marginTop: '100px'}} id='commitmentData'>Приверженность</h1>
+                <hr className='dataSectionDividerLineStart'/>
+                <div className='medicalDataWrapper'>
                     <div className='patientDataWrapper'>
                         <div className='patientDataLabel'>Приверженность к лечению по ЦП</div>
-                        <div className='patientDataBox'>{patientData.CPU}</div>
+                        <div className='patientDataBox'>{patientData.CP}</div>
                     </div>
                     <div className='patientDataWrapper'>
-                        <div className='patientDataLabel'>Список принимаемых ЛС по ПЭ </div>
+                        <div className='patientDataLabel'>Лекарственные препараты, принимаемые ранее по ПЭ Список принимаемых ЛС по ПЭ</div>
                         <div className='patientDataBox'>{patientData.accepted_PE_medications}</div>
+                    </div>
+                    <div className='patientDataWrapper'>
+                        <div className='patientDataLabel'>Лекарственные препараты, принимаемые на момент осмотра</div>
+                        <div className='patientDataBox'>{patientData.accepted_medications_at_the_time_of_inspection}</div>
                     </div>
                 </div>
             </div>

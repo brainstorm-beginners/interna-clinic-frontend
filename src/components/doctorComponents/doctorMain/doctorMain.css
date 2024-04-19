@@ -152,6 +152,11 @@ html, body {
   margin-bottom: 50px;
   margin-left: auto;
   margin-right: auto;
+  transition: 0.2s all ease-in-out;
+}
+.doctorMain .addPatientButton:hover {
+  cursor: pointer;
+  transform: scale(1.03);
 }
 .doctorMain .doctorPatientsTable {
   display: flex;

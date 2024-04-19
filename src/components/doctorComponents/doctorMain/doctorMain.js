@@ -388,17 +388,15 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                 <button className='addPatientButton' onClick={openAddPatientMenuHandle}>ДОБАВИТЬ ПАЦИЕНТА</button>
         
                 <div className='doctorPatientsTable'>
+                    {isAddPatientMenuOpened && <div className='blurBackground'></div>}
+                        {isAddPatientMenuOpened && <DoctorAddPatientMenu
+                                                    closeAddPatientMenuHandle={closeAddPatientMenuHandle}
+                                                    doctorId={doctorData.id}
+                                                    doctorsPatientsData={doctorsPatientsData}
+                                                    setDoctorsPatientsData={setDoctorsPatientsData}
+                                                    />}
                     {searchPatientsResults === null && doctorsPatientsData.map(patient => (
                         <React.Fragment key={patient.id}>
-                            {isAddPatientMenuOpened && <div className='blurBackground'></div>}
-                            {isAddPatientMenuOpened && <DoctorAddPatientMenu
-                                                closeAddPatientMenuHandle={closeAddPatientMenuHandle}
-                                                doctorId={doctorData.id}
-                                                doctorsPatientsData={doctorsPatientsData}
-                                                setDoctorsPatientsData={setDoctorsPatientsData}
-                                                searchPatientsResults={searchPatientsResults}
-                                                setSearchPatientsResults={setSearchPatientsResults}
-                                            />}
                             {isDataEditorMenuOpened && <div className='blurBackground'></div>}
                             {isDataEditorMenuOpened && <DoctorPatientDataEditor
                                                 closePatientDataEditorHandle={closePatientDataEditorHandle}

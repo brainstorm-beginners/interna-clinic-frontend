@@ -110,6 +110,11 @@ html, body {
   background-color: #ebebeb;
   color: #202020;
 }
+.patientDataEditorBox .patidentDataInputsWrapper .patidentDataCheckBoxesWrapper {
+  max-width: 100%;
+  border: 2px solid transparent;
+  padding: 25px;
+}
 .patientDataEditorBox .patientDataSaveButton {
   height: -moz-max-content;
   height: max-content;

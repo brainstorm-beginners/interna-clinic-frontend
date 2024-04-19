@@ -4,163 +4,156 @@ import CloseIcon from './icons/closeIcon.png';
 import AuthContext from '../../../auth/authContext';
 import { Navigate } from 'react-router-dom';
 
-const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatientsData, setDoctorsPatientsData, searchPatientsResults, setSearchPatientsResults}) => {
+const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatientsData, setDoctorsPatientsData}) => {
     const { refresh, setIsAuthenticated, redirectTo, setRedirectTo } = useContext(AuthContext);
     const [patientDataFromForm, setPatientDataFromForm] = useState({});
-    const [errorMessage, setErrorMessage] = useState('');
-    
-    const inputFields = [
-        "first_name",
-        "last_name",
-        "middle_name",
-        "IIN",
-        "password",
-        "gender", 
-        "age",
-        "ethnicity", 
-        "region",
-        "weight",
-        "height",
-        "BMI",
-        "education", 
-        "marital_status", 
-        "job_description",
-        "driving_status", 
-        "was_involved_in_car_accidents", 
-        "was_injured", 
-        "was_hospitalized", 
-        "cirrhosis", 
-        "duration_of_illness",
-        "EVV", 
-        "previous_infectious_diseases",
-        "bad_habits", 
-        "accepted_PE_medications",
-        "comorbidities", 
-        "hepatocellular_carcinoma", 
-        "GIB", 
-        "stool_character", 
-        "dehydration", 
-        "CPU", 
-        "portosystemic_bypass_surgery", 
-        "thrombosis", 
-        "medicines", 
-        "renal_impairment", 
-    ];
-    
-    const [selectedFields, setSelectedFields] = useState(
-        inputFields.reduce((fields, field) => {
-            fields[field] = false;
-            return fields;
-        }, {})
-    );
-    
+    const [errorMessage, setErrorMessage] = useState(''); 
 
-    const defaultFields = {
-        "AAT": 0,
-        "AAT_upper": 0,
-        "ALT": 0,
-        "ALT_upper": 0,
-        "albumin": 0,
-        "bilirubin": 0,
-        "blood_ammonia": 0,
-        "creatinine": 0,
-        "hemoglobin_level": 0,
-        "indirect_elastography_of_liver": 0,
-        "indirect_elastography_of_spleen": 0,
-        "platelet_count": 0,
-        "potassium_ion": 0,
-        "presence_of_ascites": "Нет",
-        "red_flags_EVV": "Нет",
-        "reitan_test": "Нет данных",
-        "sodium_blood_level": 0,
-        "view_ents": "Другое",
-        "INA": 0
+    const fields = {
+        // NOT REQUIRED
+        is_on_controlled: {type: 'enum', options: ['Да', 'Нет', 'Нет данных'], translation: 'Будет ли на контроле', required: false, data_type: 'str', default: 'Нет данных'},
+
+        // REQUIRED
+        first_name: {type: 'input', translation: 'Имя', required: true, data_type: 'str'},
+        last_name: {type: 'input', translation: 'Фамилия', required: true, data_type: 'str'},
+        middle_name: {type: 'input', translation: 'Отчество', required: true, data_type: 'str'},
+        IIN: {type: 'input', translation: 'ИИН', required: true, data_type: 'str'},
+        password: {type: 'input', translation: 'Пароль', required: true, data_type: 'str'},
+        age: {type: 'input', translation: 'Возраст', required: true, data_type: 'int'},
+        gender: {type: 'enum', options: ['Мужской', 'Женский'], translation: 'Пол', required: true, data_type: 'str'},
+        ethnicity: {type: 'enum', options: ['Азиат', 'Европеец'], translation: 'Этническая принадлежность', required: true, data_type: 'str'},
+        region: {type: 'input', translation: 'Регион', required: true, data_type: 'str'},
+        height: {type: 'input', translation: 'Рост (в сантиметрах)', required: true, data_type: 'int'},
+        weight: {type: 'input', translation: 'Вес (в килограммах)', required: true, data_type: 'int'},
+        // BMI: {type: 'input', translation: 'Индекс массы тела'}
+        education: {type: 'enum', options: ['Не оконченное среднее', 'Среднее', 'Высшее'], translation: 'Уровень образования', required: true, data_type: 'str'},
+        marital_status: {type: 'enum', options: ['Не замужем/не женат ', 'Замужем/Женат', 'Разведен/вдова/вдовец'], translation: 'Семейное положение', required: true,
+                                                                                                                                                    data_type: 'str'},
+        job_description: {type: 'enum', options: ['С точными механизмами', 'Офисная', 'С активной физической нагрузкой', 'Не работаю', 'Другое'],
+                                                                                                                        translation: 'С чем связана работа', required: true,
+                                                                                                                        data_type: 'str'},
+        driving_status: {type: 'enum', options: ['Да', 'Нет'], translation: 'Водит ли транспортное средство', required: true, data_type: 'str'},
+        was_involved_in_car_accidents: {type: 'enum', options: ['Да', 'Нет'], translation: 'Был ли участником ДТП за последний год?', required: true, data_type: 'str'},
+        cirrhosis: {type: 'multiple', options: ['ХГС', 'ХГВ', 'ХГД', 'НАЖБП/МАЖБП', 'Алкогольный стеатогепатит', 'Аутоиммунный гепатит', 'ПБХ', 'ПСХ', 'ПБХ + АИГ',
+                                                                                                                'ПСХ + АИГ', 'БВК', 'Гемохроматоз', 'Другое'], 
+                                                                                                                translation: 'Цирроз печени в исходе', required: true,
+                                                                                                                data_type: 'str'},
+        duration_of_illness: {type: 'input', translation: 'Известная продолжительность болезни печени (в годах)', required: true, data_type: 'int'},
+
+        // NOT REQUIRED
+        platelet_count: {type: 'input', translation: 'Кол-во тромбоцитов в крови', required: false, data_type: 'float', default: 0.00},
+        hemoglobin_level: {type: 'input', translation: 'Уровень гемоглобина в крови', required: false, data_type: 'float', default: 0.00},
+        ALT: {type: 'input', translation: 'АЛТ (абсолютное значение)', required: false, data_type: 'float', default: 0.00},
+        ATL_unit: {type: 'enum', options: ['ЕД/Л', 'МККАТ/Л'], translation: 'Единица измерения АЛТ', required: false, data_type: 'str', default: 'ЕД/Л'},
+        AAT: {type: 'input', translation: 'АCТ (абсолютное значение)', required: false, data_type: 'float', default: 0.00},
+        AAT_unit: {type: 'enum', options: ['ЕД/Л', 'МККАТ/Л'], translation: 'Единица измерения АСТ', required: false, data_type: 'str', default: 'ЕД/Л'},
+        bilirubin: {type: 'input', translation: 'Билирубин (МКМОЛЬ/Л)', required: false, data_type: 'float', default: 0.00},
+        creatinine: {type: 'input', translation: 'Креатинин (МКМОЛЬ/Л)', required: false, data_type: 'float', default: 0.00},
+        INA: {type: 'input', translation: 'МНО', required: false, data_type: 'float', default: 0.00},
+        albumin: {type: 'input', translation: 'Альбумин', required: false, data_type: 'float', default: 0.00},
+        sodium_blood_level: {type: 'input', translation: 'Na+', required: false, data_type: 'float', default: 0.00},
+        potassium_ion: {type: 'input', translation: 'K+', required: false, data_type: 'float', default: 0.00},
+
+        // REQUIRED
+        blood_ammonia: {type: 'input', translation: 'Результат экспресс теста (аммиак крови)', required: true, data_type: 'float'},
+
+        // NOT REQUIRED
+        indirect_elastography_of_liver: {type: 'input', translation: 'Результат непрямой эластографии печени, стадия фиброза (kPa)', required: false, data_type: 'float', default: 0.00},
+        indirect_elastography_of_spleen: {type: 'input', translation: 'Результат непрямой эластографии селезенки (kPa)', required: false, data_type: 'float', default: 0.00},
+        EVV: {type: 'enum', options: ['1 степень', '2 степень', '3 степень', '4 степень', 'Нет', 'Нет данных'], translation: 'Наличие ВРВ', required: false,
+                                                                                                                                                data_type: 'str',
+                                                                                                                                                default: 'Нет данных'},
+        red_flags_EVV: {type: 'enum', options: ['Да', 'Нет', 'Нет данных'], translation: "Красные знаки ВРВ", required: false, data_type: 'str', default: 'Нет данных'},
+        presence_of_ascites: {type: 'enum', options: ['Контролируемый', 'Рефракетерный', 'Нет', 'Нет данных'], translation: 'Наличие асцита', required: false, data_type: 'str',
+                                                                                                                                                            default: 'Нет данных'},
+
+        // REQUIRED
+        reitan_test: {type: 'enum', options: ['<40 сек', '41-60 сек', '61-90 сек', '91-120 сек', '>120 сек'], translation: 'Тест Рейтана', required: true, data_type: 'str'},
+        type_of_encephalopathy: {type: 'enum', options: ['А (acute: ПЭ, ассоциированная с острой печеночной недостаточностью)',
+                                                            'B (bypass: ПЭ, ассоциированная с портосистемным шунтированием)', 'C (cirrhosis: ПЭ, ассоциированная с ЦП)'],
+                                                            translation: 'Тип энцефалопатии', required: true, data_type: 'str'},
+        degree_of_encephalopathy: {type: 'enum', options: ['Скрытая ISHEN – Минимальная WHC', 'Скрытая ISHEN - 1 WHC', 'Явная ISHEN 2', 'Явная ISHEN 3 WHC', 'Явная ISHEN 4 WHC'],
+                                                                                                translation: 'Степень энцефалопатии', required: true, data_type: 'str'},
+
+        // NOT REQUIRED
+        process_of_encephalopathy: {type: 'enum', options: ['Эпизодическая', 'Рецидивирующая', 'персистирующая', 'Нет данных'], translation: 'Течение энцефалопатии',
+                                                                                                                        required: false, data_type: 'str', default: 'Нет данных'},
+        presence_of_precipitating_factors: {type: 'enum', options: ['Спровоцированная', 'Неспровоцированная', 'Нет данных'], translation: 'Наличие провоцирующих факторов',
+                                                                                                                        required: false, data_type: 'str', default: 'Нет данных'},
+        comorbidities: {type: 'multiple', options: ['ВИЧ -инфекция', 'Сахарный диабет/гликемия натощак', 'Избыточный вес / ожирение', 'Ишемическая болезнь сердца', 'АГ',
+                                                                                                                        'Хроническая болезнь почек',
+                                                                                                                        'Хроническое обструктивное болезнь легких', 'Другое',
+                                                                                                                        'Нет данных'], translation: 'Сопутствующие заболевания',
+                                                                                                                        required: false, data_type: 'str', default: 'Нет данных'},
+        was_planned_hospitalized_with_liver_diseases: {type: 'enum_expandable', options: [{'Да': 'number_of_planned_hospitalizations_with_liver_diseases'}, 'Нет', 'Нет данных'],
+                                                                                                translation: 'Был/а ли ПЛАНОВО госпитализирован/а с заболеваниями печени за последний год?',
+                                                                                                required: false, data_type: 'str', default: 'Нет данных'},
+        number_of_planned_hospitalizations_with_liver_diseases: {type: 'input', translation: 'Количество плановых госпитализаций', required: false, data_type: 'int', default: 0},
+        was_planned_hospitalized_without_liver_diseases: {type: 'enum_expandable', options: [{'Да': 'number_of_planned_hospitalizations_without_liver_diseases'}, 'Нет', 'Нет данных'],
+                                                                                                translation: 'Был/а ли ПЛАНОВО госпитализирован/а БЕЗ заболеваний печени за последний год?',
+                                                                                                required: false, data_type: 'str', default: 'Нет данных'},
+        number_of_planned_hospitalizations_without_liver_diseases: {type: 'input', translation: 'Количество плановых госпитализаций', required: false, data_type: 'int', default: 0},
+        
+        
+        was_emergency_hospitalized_with_liver_diseases: {type: 'enum_expandable', options: [{'Да': 'number_of_emergency_hospitalizations_with_liver_diseases'}, 'Нет', 'Нет данных'],
+                                                                                                translation: 'Был/а ли ЭКСТРЕННО госпитализирован/а с заболеваниями печени за последний год?',
+                                                                                                required: false, data_type: 'str', default: 'Нет данных'},
+        number_of_emergency_hospitalizations_with_liver_diseases: {type: 'input', translation: 'Количество экстренных госпитализаций', required: false, data_type: 'int', default: 0},
+        was_emergency_hospitalized_without_liver_diseases: {type: 'enum_expandable', options: [{'Да': 'number_of_emergency_hospitalizations_without_liver_diseases'}, 'Нет', 'Нет данных'],
+                                                                                                translation: 'Был/а ли ЭКСТРЕННО госпитализирован/а БЕЗ заболеваний печени за последний год?',
+                                                                                                required: false, data_type: 'str', default: 'Нет данных'},
+        number_of_emergency_hospitalizations_without_liver_diseases: {type: 'input',translation: 'Количество экстренных госпитализаций', required: false, data_type: 'int', default: 0},
+
+        was_injured: {type: 'enum', options: ['Да', 'Нет'], translation: 'Получал/а ли травмы за последний год?', required: false, data_type: 'str', default: 'Нет'},
+
+        // REQUIRED
+        GIB: {type: 'enum', options: ['Да', 'Нет'], translation: 'ЖКК за последний год', required: true, data_type: 'str'},
+        previous_infectious_diseases: {type: 'multiple', options: ['Инфекция органов дыхания', 'Инфекция органов пищеварения', 'Инфекция мочеполовой системы', 'Другое', 'Нет'],
+                                                                                                translation: 'Переносил/а ли инфекционные заболевания за последний год?',
+                                                                                                required: true, data_type: 'str'},
+        stool_character: {type: 'enum', options: ['Регулярный (1 раз в 1-2 дня)', 'Запор', 'Диарея'], translation: 'Характер стула', required: true, data_type: 'str'},
+        dehydration: {type: 'enum', options: ['Назначение диуретиков в неконтролируемых дозировках', 'Парацентез в больших объемах', 'Нет', 'Нет данных'], translation: 'Дегидратация',
+                                                                                                required: true, data_type: 'str'},
+        portosystemic_bypass_surgery: {type: 'enum', options: ['Шунтирующие операции', 'Cпонтанные шунты (Гастроэзофагеальные)', 'Cпонтанные шунты (Забрюшинные)',
+                                                                                'Cпонтанные шунты (Анастомозы между левой ветвью воротной вены и сосудами передней брюшной стенки)',
+                                                                                'Cпонтанные шунты (Между прямокишечным сплетением и нижней полой веной)', 'Нет данных'],
+                                                                                translation: 'Портосистемное шунтирование', required: true, data_type: 'str'},
+        thrombosis: {type: 'enum', options: ['Тромбоз воротной вены', 'Тромбоз печеночных вен', 'Оба варианта', 'Нет'], translation: 'Тромбоз', required: true, data_type: 'str'},
+        medicines: {type: 'multiple', options: ['Прием бензодиазепин', 'Прием опиодов', 'ИПП', 'Нет'], translation: 'ЛС', required: true, data_type: 'str'},
+        renal_impairment: {type: 'enum', options: ['Да', 'Нет'], translation: 'Почечная недостаточность', required: true, data_type: 'str'},
+        bad_habits: {type: 'enum', options: ['Табакокурение', 'Злоупотребление алкоголем', 'Оба варианта', 'Нет'], translation: 'Вредные привычки', required: true, data_type: 'str'},
+        CP: {type: 'enum', options: ['Имелась', 'Отсутствовала'], translation: 'Приверженность к лечению по ЦП', required: true, data_type: 'str'},
+        accepted_PE_medications: {type: 'input', translation: 'Лекарственные препараты, принимаемые ранее по ПЭ Список принимаемых ЛС по ПЭ', required: false, data_type: 'str',
+                                                                                                                                                    default: 'Нет'},
+        accepted_medications_at_the_time_of_inspection: {type: 'input', translation: 'Лекарственные препараты, принимаемые на момент осмотра', required: false, data_type: 'str', 
+                                                                                                                                                    default: 'Нет'},                                                                   
     }
 
-    const dbEnumFieldsOptions = {
-        gender: ['Мужской', 'Женский'],
-        ethnicity: ['Азиат', 'Европеец'],
-        education: ['Не оконченное среднее', 'Среднее', 'Высшие'],
-        marital_status: ['Не замужем/не женат', 'За мужем/женат', 'Разведен/вдова/вдовец'],
-        job_description: ['Требующая большой концентрации', 'Офисная', 'Не работаю', 'С активной физ нагрузкой', 'Другое'],
-        driving_status: ['Да', 'Нет'],
-        was_involved_in_car_accidents: ['Да', 'Нет'],
-        cirrhosis: ['ХГС', 'ХГВ', 'ХГД', 'НАЖБП/МАЖБП', 'Алкогольный стеатогепатит', 'Аутоиммунный гепатит', 'ПБХ', 'ПСХ', 'ПБХ + АИГ', 'ПСХ + АИГ', 'БВК', 'Гемохроматоз', 'Другое', 'Нет'],
-        EVV: ['1 степень', '2 степень', '3 степень', '4 степень', 'Нет'],
-        red_flags_EVV: ['Да', 'Нет'],
-        presence_of_ascites: ['Нет', 'Контролируемый', 'Рефракетерный'],
-        reitan_test: ['<40 сек', '41-60 сек', '61-90 сек', '91-120 сек', '>120 сек', 'Нет данных'],
-        view_ents: ['АВС', 'Скрытая свная', 'Другое'],
-        hepatocellular_carcinoma: ['Да', 'Нет'],
-        was_hospitalized: ['Планово', 'Экстренно', 'Нет'],
-        was_injured: ['Да', 'Нет'],
-        GIB: ['Да', 'Нет'],
-        previous_infectious_diseases: ['Да', 'Нет'],
-        stool_character: ['Регулярный (1 раз в 1-2 дня)', 'Запор', 'Диарея'],
-        portosystemic_bypass_surgery: ['Шунтирующие операции', 'Спонтанные шунты', 'Нет', 'Другое'],
-        thrombosis: ['Нет', 'Тромбоз воротной вены', 'Тромбоз печеночных вен'],
-        medicines: ['Прием бензодиазепин', 'Прием опиодов', 'ИПП', 'Другое'],
-        renal_impairment: ['Да', 'Нет'],
-        bad_habits: ['Табакокурение', 'Злоупотребление алкоголем', 'Нет', 'Другое'],
-        CPU: ['Имелась', 'Отсутствовала']
-    };
-
-    const fieldTranslations = {
-        "AAT": "АСТ (абсолютное значение, ЕД/л или мкмоль/л)",
-        "AAT_upper": "АСТ (количество верхних границ норм)",
-        "ALT": "АЛТ (абсолютное значение, ЕД/л или мкмоль/л)",
-        "ALT_upper": "АЛТ (количество верхних границ норм)",
-        "BMI": "ИМТ (Индекс массы тела)",
-        "CPU": "ЦП",
-        "EVV": "Наличие ВРВ",
-        "GIB": "ЖКТ за последний год",
-        "IIN": "ИИН",
-        "password": "Пароль",
-        "INA": "МНО",
-        "accepted_PE_medications": "Список принимаемых ЛС по ПЭ",
-        "age": "Возраст",
-        "albumin": "Альбумин",
-        "bad_habits": "Вредные привычки",
-        "bilirubin": "Биллирубин",
-        "blood_ammonia": "Результат экспресс теста (аммиак крови)",
-        "cirrhosis": "Цирроз печени в исходе",
-        "comorbidities": "Сопутствующие заболевания",
-        "creatinine": "Креатинин (мкмоль/л)",
-        "dehydration": "Дегидрация",
-        "driving_status": "Водительское удостоверение (Наличие/отсутствие водительского удостоверения)",
-        "duration_of_illness": "Продолжительность болезни (в днях)",
-        "education": "Образование (Уровень образования)",
-        "ethnicity": "Этническая принадлежность",
-        "first_name": "Имя",
-        "gender": "Пол",
-        "height": "Рост",
-        "hemoglobin_level": "Уровень гемоглобина",
-        "hepatocellular_carcinoma": "Гепатоцеллюлярная карцинома (Рак печени)",
-        "indirect_elastography_of_liver": "Непрямая эластометрия печени",
-        "indirect_elastography_of_spleen": "Непрямая эластометрия селезенки",
-        "job_description": "Профессия",
-        "last_name": "Фамилия",
-        "marital_status": "Семейное положение",
-        "medicines": "Принимаемые лекарства",
-        "middle_name": "Отчество",
-        "platelet_count": "Количество тромбоцитов",
-        "portosystemic_bypass_surgery": "Портосистемное шунтирование",
-        "potassium_ion": "K+",
-        "presence_of_ascites": "Наличие асцита",
-        "previous_infectious_diseases": "Перенесенные инфекционные заболевания за последний год",
-        "red_flags_EVV": "Красные флаги ВРВ",
-        "region": "Регион",
-        "reitan_test": "Тест Рейтана",
-        "renal_impairment": "Почечная недостаточность",
-        "sodium_blood_level": "Na+",
-        "stool_character": "Характер стула",
-        "thrombosis": "Тромбоз",
-        "view_ents": "Виды энц",
-        "was_hospitalized": "Был/а ли госпитализирован/а за последний год?",
-        "was_injured": "Получал/а ли травмы за последний год?",
-        "was_involved_in_car_accidents": "Был/а ли участником ДТП за последний год?",
-        "weight": "Вес"
-    };
+    const [formData, setFormData] = useState(() => {
+        const initialData = {};
+    
+        Object.keys(fields).forEach((fieldKey) => {
+            const field = fields[fieldKey];
+            if (field.default) {
+                initialData[fieldKey] = field.type === 'multiple' ? [field.default] : field.default;
+            } else {
+                switch (field.data_type) {
+                case 'float':
+                    initialData[fieldKey] = 0.00;
+                    break;
+                case 'str':
+                    initialData[fieldKey] = field.type === 'multiple' ? [] : '';
+                    break;
+                case 'int':
+                    initialData[fieldKey] = 0;
+                    break;
+                default:
+                    initialData[fieldKey] = '';
+                }
+            }
+        });
+        return initialData;
+    });        
 
     useEffect(() => {
         if (redirectTo) {
@@ -168,17 +161,59 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
         }
     }, [redirectTo, setRedirectTo]);
 
-    const handleInputChange = (field, event) => {
-        setPatientDataFromForm({
-            ...patientDataFromForm,
-            [field]: event.target.value,
-        });
+    const handleInputChange = (fieldName, event) => {
+        const field = fields[fieldName]
+    
+        if (event.target.value !== "Выберите опцию..." && field.required) {
+            event.target.classList.remove('not-selected');
+        }
+    
+        if (event.target.value === "" && field.required) {
+            event.target.classList.add('not-selected');
+        }
+    
+        setFormData(prevFormData => {
+            let updatedValue = event.target.value;
+    
+            if (updatedValue === '' && !field.required) {
+                switch (field.data_type) {
+                    case 'int':
+                        updatedValue = 0;
+                        break;
+                    case 'float':
+                        updatedValue = 0.00;
+                        break;
+                    default:
+                        updatedValue = '';
+                }
+            }
 
-        setSelectedFields({
-            ...selectedFields,
-            [field]: !!event.target.value,
+            if (field.type === 'enum_expandable' && (updatedValue === 'Нет данных' || updatedValue === 'Нет')) {
+                const expandableOptionKey = Object.values(field.options.find(option => typeof option === 'object'))[0];
+                prevFormData[expandableOptionKey] = 0;
+            }
+    
+            const updatedFormData = {...prevFormData, [fieldName]: updatedValue};
+            return updatedFormData;
         });
     };
+
+    useEffect(() => {
+        console.log("FORM DATA: " + JSON.stringify(formData));
+    }, [formData]); 
+    
+    const handleCheckboxChange = (fieldName, option, event) => {
+        setFormData(prevFormData => {
+            let updatedValue = prevFormData[fieldName] ? [...prevFormData[fieldName]] : [];
+            if (event.target.checked) {
+                updatedValue.push(option);
+            } else {
+                updatedValue = updatedValue.filter(item => item !== option);
+            }
+            const updatedFormData = {...prevFormData, [fieldName]: updatedValue};
+            return updatedFormData;
+        });
+    };       
 
     const addPatientToDb = async () => {
         const handleLogout = () => {
@@ -190,12 +225,10 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
         };
 
         const patientToAddFinalData = {
-            ...defaultFields,
-            ...patientDataFromForm,
+            ...formData,
+            BMI: (formData['weight'] / ((formData['height'] / 100) * (formData['height'] / 100))).toFixed(2),
             doctor_id: doctorId
         };
-
-        console.log("Final data: " + JSON.stringify(patientToAddFinalData));
 
         const currentUserData = localStorage.getItem('currentUserData');
         let accessToken = localStorage.getItem('accessToken');
@@ -243,8 +276,9 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                         })
                     });
 
+                    const recievedPatientData = await response.json()
                     closeAddPatientMenuHandle();
-                    window.location.reload(); 
+                    setDoctorsPatientsData([recievedPatientData, ...doctorsPatientsData])
                 } catch (error) {
                     handleLogout();
                 }
@@ -257,8 +291,10 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                         setErrorMessage('Пациент с таким ИИН уже существует в базе данных.');
                         break;
                     default:
+                        const recievedPatientData = await response.json()
                         closeAddPatientMenuHandle();
-                        window.location.reload(); 
+                        setDoctorsPatientsData([recievedPatientData, ...doctorsPatientsData])
+                        closeAddPatientMenuHandle();
                 }            
             }
         } catch (error) {
@@ -276,27 +312,81 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                 <img src={CloseIcon} className='closeDoctorAddPatientMenuButton' alt='' onClick={closeAddPatientMenuHandle} />
             </div>
             <div className='patientDataInputsList'>
-                {inputFields.map((field) => {
-                    if (dbEnumFieldsOptions[field]) {
+                {Object.keys(fields).map((fieldKey) => {
+                    const field = fields[fieldKey];
+                    // These fields will be displayed only with need from 'enum_exapndable' selects. Now they're ignored and won't be displayed.
+                    const not_to_display_fields = ['is_on_controlled', 'number_of_planned_hospitalizations_with_liver_diseases', 'number_of_planned_hospitalizations_without_liver_diseases', 'number_of_emergency_hospitalizations_with_liver_diseases', 'number_of_emergency_hospitalizations_without_liver_diseases']
+                    if (not_to_display_fields.includes(fieldKey)) {
+                        return null;
+                    }
+                    if (field.type === 'enum' || field.type === 'enum_expandable') {
                         return (
-                            <div className='patidentDataInputsWrapper' key={field}>
-                                <label className='patientDataLabel'>{fieldTranslations[field] || field}</label>
-                                <select className={`patidentDataSelect ${selectedFields[field] ? '' : 'not-selected'}`} onChange={(event) => handleInputChange(field, event)}>
-                                    <option value="">Выберите опцию...</option>
-                                    {dbEnumFieldsOptions[field].map(option => (
-                                        <option key={option} value={option}>{option}</option>
-                                    ))}
+                            <div className='patidentDataInputsWrapper' key={fieldKey}>
+                                <label className='patientDataLabel'>{field.translation || fieldKey}</label>
+                                <select className={`patidentDataSelect ${!field.required ? '' : 'not-selected'}`} onChange={(event) => handleInputChange(fieldKey, event)}>
+                                    {field.default 
+                                        ? <option value={field.default}>{field.default}</option>
+                                        : <option value="">Выберите опцию...</option>
+                                    }
+                                    {field.options.map(option => {
+                                        if (typeof option === 'object') {
+                                            return Object.keys(option).map(key => (
+                                                <option key={key} value={key}>{key}</option>
+                                            ));
+                                        } else if (option !== field.default) {
+                                            return <option key={option} value={option}>{option}</option>
+                                        }
+                                    })}
                                 </select>
+                                {field.type === 'enum_expandable' && field.options.map(option => {
+                                    if (typeof option === 'object' && Object.keys(option).includes(formData[fieldKey])) {
+                                        return (
+                                            <div className='patidentDataInputsWrapper' key={fieldKey}>
+                                                <label className='patientDataLabel' style={{marginTop: '20px'}}>
+                                                    {fields[Object.values(option)[0]].translation || fieldKey}
+                                                </label>
+                                                <input className='patidentDataInput' onChange={(event) => handleInputChange(Object.values(option)[0], event)} />
+                                            </div>
+                                        );
+                                    }
+                                })}
                             </div>   
-                        )
-                    } else {
+                        );
+                    } else if (field.type === 'input') {
                         return (
-                            <div className='patidentDataInputsWrapper' key={field}>
-                                <label className='patientDataLabel'>{fieldTranslations[field] || field}</label>
-                                <input className={`patidentDataInput ${selectedFields[field] ? '' : 'not-selected'}`} onChange={(event) => handleInputChange(field, event)} />
+                            <div className='patidentDataInputsWrapper' key={fieldKey}>
+                                <label className='patientDataLabel'>{field.translation || fieldKey}</label>
+                                <input className={`patidentDataInput ${!field.required ? '' : 'not-selected'}`} onChange={(event) => handleInputChange(fieldKey, event)} />
+                            </div>
+                        );
+                    } else if (field.type === 'multiple') {
+                        const otherOptionsSelected = formData[fieldKey].some(option => option !== 'Нет' && option !== 'Нет данных');
+                        const noDataOptionsSelected = formData[fieldKey].includes('Нет') || formData[fieldKey].includes('Нет данных');
+                        const anyOptionSelected = formData[fieldKey].length > 0;
+
+                        return (
+                            <div className='patidentDataInputsWrapper' key={fieldKey}>
+                                <label className='patientDataLabel'>{field.translation || fieldKey}</label>
+                                <div className={`patidentDataCheckBoxesWrapper ${field.required && !anyOptionSelected ? 'not-selected' : ''}`}>
+                                    {field.options.map((option, index) => (
+                                        <div key={index}>
+                                            <input 
+                                                type='checkbox' 
+                                                id={`${fieldKey}_${index}`} 
+                                                name={fieldKey} 
+                                                value={option}
+                                                checked={formData[fieldKey].includes(option)}
+                                                onChange={event => handleCheckboxChange(fieldKey, option, event)}
+                                                disabled={(otherOptionsSelected && (option === 'Нет' || option === 'Нет данных')) || (noDataOptionsSelected && option !== 'Нет' && option !== 'Нет данных')}
+                                            />
+                                            <label htmlFor={`${fieldKey}_${index}`}>{option}</label>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         );
                     }
+                    return null;
                 })}
             </div>
             <button className='addPatientButton' onClick={() => addPatientToDb()}>ДОБАВИТЬ ПАЦИЕНТА</button>

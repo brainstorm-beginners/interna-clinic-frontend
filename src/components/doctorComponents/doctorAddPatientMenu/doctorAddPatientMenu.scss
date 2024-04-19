@@ -17,7 +17,7 @@
     font-family: app.$basic-font-family;
     font-size: clamp(0.7rem, 1.6vw, 1.3rem);
     overflow-y: auto;
-    padding-bottom: 30px;
+    padding: 20px;
     overflow-x: hidden;
 
     .doctorAddPatientMenuHeaderBox {
@@ -78,6 +78,14 @@
             background-color: app.$white-color;
             color: app.$dark-font-color;
         }
+
+        .patidentDataCheckBoxesWrapper {
+            max-width: 90% !important;
+            border: 2px solid transparent;
+            padding: 25px;
+            font-family: app.$basic-font-family;
+            font-size: clamp(0.9rem, 1.5vw, 1.3rem);
+        }    
     }
 
     .addPatientButton {
