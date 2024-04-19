@@ -145,7 +145,7 @@ const PatientMain = ({patientIIN, openedSection}) => {
         const element = document.getElementById(targetHTMLelementID);
         if (element) {
             const elementRect = element.getBoundingClientRect();
-            const absoluteElementTop = elementRect.top + window.pageYOffset;
+            const absoluteElementTop = elementRect.top + window.scrollY;
             const middle = absoluteElementTop - (window.innerHeight / 4);
             window.scrollTo({
                 top: middle,
