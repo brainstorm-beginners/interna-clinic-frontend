@@ -152,7 +152,20 @@ const PatientMain = ({patientIIN, openedSection}) => {
                 behavior: 'smooth'
             });
         }
-    };    
+    };
+    
+    const logOutButtonHandle = () => {
+        const confirmation = window.confirm("Вы уверены, что хотите выйти из аккаунта?");
+        if (!confirmation) {
+            return;
+        }
+
+        setIsAuthenticated(false);
+        setRedirectTo('/login');
+        localStorage.removeItem('currentUserData');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+    };
 
     if (redirectTo) {
         return <Navigate to={redirectTo} replace />;
@@ -176,6 +189,7 @@ const PatientMain = ({patientIIN, openedSection}) => {
                     <li className='sectionNavigation__element' onClick={() => navigateTo('anamnesisData')}>Анамнез пациента</li>
                     <li className='sectionNavigation__element' onClick={() => navigateTo('provokingFactsData')}>Провоцирующие факторы</li>
                     <li className='sectionNavigation__element' onClick={() => navigateTo('commitmentData')}>Приверженность</li>
+                    <li className='sectionNavigation__element_less_than_1150px' onClick={() => navigateTo('acocuntActionsSection')}>Действия с аккаунтом</li>
                 </ul>
 
                 <h1 className='dataSectionTitle' id='demographicData'>Демографические данные</h1>
@@ -513,6 +527,10 @@ const PatientMain = ({patientIIN, openedSection}) => {
                         <div className='patientDataBox'>{patientData.accepted_medications_at_the_time_of_inspection}</div>
                     </div>
                 </div>
+
+                <h1 className='accoutActionsSectionTitle' id='acocuntActionsSection'>Действия с аккаунтом</h1>
+                <hr className='accoutActionsDividerLineStart'/>
+                <button className='logOutButton' onClick={() => logOutButtonHandle()}>Выйти из аккаунта</button>
             </div>
         );
     } else if (openedSection === 'tests') {

@@ -73,6 +73,39 @@
                     font-size: clamp(0.8rem, 1.5vw, 1.3rem) !important;  
                 }
             }
+
+            &_less_than_1150px {
+                display: none;
+                flex-grow: 1;
+                flex-basis: 130px;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                list-style: none;
+                padding: 15px 20px;
+                border: 2px solid app.$dark-blue-color;
+                border-radius: 10px;
+                font-family: app.$basic-font-family;
+                font-size: clamp(0.5rem, 1.4vw, 1rem) !important;      
+                -webkit-user-select: none;
+                user-select: none;
+                transition: 0.2s all ease-in-out;
+
+                &:hover {
+                    cursor: pointer;
+                    transform: scale(1.03);
+                }
+
+                @media only screen and (max-width: 700px) {
+                    & {
+                        font-size: clamp(0.8rem, 1.5vw, 1.3rem) !important;  
+                    }
+                }
+
+                @media only screen and (max-width: 1150px) {
+                    display: flex;
+                }
+            }
         }
     }
 
@@ -110,6 +143,7 @@
         
             .patientDataLabel, .patientDoctorDataLabel {
                 width: max-content;
+                max-width: 100%;
                 text-align: center;
                 padding: 0px 20px;
                 color: grey;
@@ -142,5 +176,45 @@
         flex-wrap: wrap;
         justify-content: center;
         font-family: app.$basic-font-family;
+    }
+
+    .accoutActionsSectionTitle {
+        display: none;
+        font-family: app.$basic-font-family;
+        font-size: clamp(0.9rem, 1.8vw, 1.5rem) !important;
+        margin-top: 70px;
+
+        @media only screen and (max-width: 1150px) {
+            display: block;
+        }
+    }
+
+    .accoutActionsDividerLineStart {
+        display: none;
+        border-color: app.$dark-blue-color;
+        margin-bottom: 50px;
+
+        @media only screen and (max-width: 1150px) {
+            display: block;
+        }
+    }
+
+    .logOutButton {
+        display: none;
+        padding: 10px 15px;
+        font-size: clamp(1rem, 1vw, 1.8rem) !important;
+        color: red;
+        border: 2px solid red;
+        border-radius: 5px;
+        transition: 0.2s all ease-in-out;
+
+        &:hover {
+            cursor: pointer;
+            transform: scale(1.05);
+        }
+
+        @media only screen and (max-width: 1150px) {
+            display: block;
+        }
     }
 }

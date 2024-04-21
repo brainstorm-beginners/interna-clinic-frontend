@@ -87,6 +87,7 @@
         
             .doctorDataLabel, .doctorDoctorDataLabel {
                 width: max-content;
+                max-width: 100%;
                 text-align: center;
                 padding: 0px 20px;
                 color: grey;
@@ -110,6 +111,46 @@
                 font-size: clamp(0.8rem, 1.6vw, 1.3rem) !important;
             }
         }        
+    }
+
+    .accoutActionsSectionTitle {
+        display: none;
+        font-family: app.$basic-font-family;
+        font-size: clamp(0.9rem, 1.8vw, 1.5rem) !important;
+        margin-top: 70px;
+
+        @media only screen and (max-width: 1150px) {
+            display: block;
+        }
+    }
+
+    .accoutActionsDividerLineStart {
+        display: none;
+        border-color: app.$dark-blue-color;
+        margin-bottom: 50px;
+
+        @media only screen and (max-width: 1150px) {
+            display: block;
+        }
+    }
+
+    .logOutButton {
+        display: none;
+        padding: 10px 15px;
+        font-size: clamp(1rem, 1vw, 1.8rem) !important;
+        color: red;
+        border: 2px solid red;
+        border-radius: 5px;
+        transition: 0.2s all ease-in-out;
+
+        &:hover {
+            cursor: pointer;
+            transform: scale(1.05);
+        }
+
+        @media only screen and (max-width: 1150px) {
+            display: block;
+        }
     }
 
     .searchBarWrapper {

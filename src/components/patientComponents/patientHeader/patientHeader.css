@@ -68,4 +68,21 @@ a {
   .header_box .navigation_box .navbar {
     gap: 10px;
   }
+}
+.header_box .logOutButton {
+  display: block;
+  position: absolute;
+  width: clamp(30px, 2.3vw, 40px) !important;
+  height: clamp(30px, 2.3vw, 40px) !important;
+  transition: 0.2s all ease-in-out;
+  left: 95%;
+}
+.header_box .logOutButton:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+}
+@media only screen and (max-width: 1150px) {
+  .header_box .logOutButton {
+    display: none;
+  }
 }/*# sourceMappingURL=patientHeader.css.map */

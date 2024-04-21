@@ -91,6 +91,7 @@ html, body {
 .doctorMain .personalDataWrapper .doctorDataWrapper .doctorDataLabel, .doctorMain .personalDataWrapper .doctorDataWrapper .doctorDoctorDataLabel, .doctorMain .personalDataWrapper .doctorDoctorDataWrapper .doctorDataLabel, .doctorMain .personalDataWrapper .doctorDoctorDataWrapper .doctorDoctorDataLabel, .doctorMain .medicalDataWrapper .doctorDataWrapper .doctorDataLabel, .doctorMain .medicalDataWrapper .doctorDataWrapper .doctorDoctorDataLabel, .doctorMain .medicalDataWrapper .doctorDoctorDataWrapper .doctorDataLabel, .doctorMain .medicalDataWrapper .doctorDoctorDataWrapper .doctorDoctorDataLabel, .doctorMain .doctorAvailableTestsWrapper .doctorDataWrapper .doctorDataLabel, .doctorMain .doctorAvailableTestsWrapper .doctorDataWrapper .doctorDoctorDataLabel, .doctorMain .doctorAvailableTestsWrapper .doctorDoctorDataWrapper .doctorDataLabel, .doctorMain .doctorAvailableTestsWrapper .doctorDoctorDataWrapper .doctorDoctorDataLabel, .doctorMain .doctorCompletedTestsWrapper .doctorDataWrapper .doctorDataLabel, .doctorMain .doctorCompletedTestsWrapper .doctorDataWrapper .doctorDoctorDataLabel, .doctorMain .doctorCompletedTestsWrapper .doctorDoctorDataWrapper .doctorDataLabel, .doctorMain .doctorCompletedTestsWrapper .doctorDoctorDataWrapper .doctorDoctorDataLabel {
   width: -moz-max-content;
   width: max-content;
+  max-width: 100%;
   text-align: center;
   padding: 0px 20px;
   color: grey;
@@ -110,6 +111,45 @@ html, body {
   border-radius: 10px;
   border: 3px solid #00416A;
   font-size: clamp(0.8rem, 1.6vw, 1.3rem) !important;
+}
+.doctorMain .accoutActionsSectionTitle {
+  display: none;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: clamp(0.9rem, 1.8vw, 1.5rem) !important;
+  margin-top: 70px;
+}
+@media only screen and (max-width: 1150px) {
+  .doctorMain .accoutActionsSectionTitle {
+    display: block;
+  }
+}
+.doctorMain .accoutActionsDividerLineStart {
+  display: none;
+  border-color: #00416A;
+  margin-bottom: 50px;
+}
+@media only screen and (max-width: 1150px) {
+  .doctorMain .accoutActionsDividerLineStart {
+    display: block;
+  }
+}
+.doctorMain .logOutButton {
+  display: none;
+  padding: 10px 15px;
+  font-size: clamp(1rem, 1vw, 1.8rem) !important;
+  color: red;
+  border: 2px solid red;
+  border-radius: 5px;
+  transition: 0.2s all ease-in-out;
+}
+.doctorMain .logOutButton:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+}
+@media only screen and (max-width: 1150px) {
+  .doctorMain .logOutButton {
+    display: block;
+  }
 }
 .doctorMain .searchBarWrapper {
   display: flex;

@@ -318,6 +318,19 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
         document.documentElement.style.overflowY = 'auto';
     }
 
+    const logOutButtonHandle = () => {
+        const confirmation = window.confirm("Вы уверены, что хотите выйти из аккаунта?");
+        if (!confirmation) {
+            return;
+        }
+
+        setIsAuthenticated(false);
+        setRedirectTo('/login');
+        localStorage.removeItem('currentUserData');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+    };
+
     if (redirectTo) {
         return <Navigate to={redirectTo} replace />;
     }
@@ -363,6 +376,10 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                         <div className='doctorDataBox'>{doctorData.qualification}</div>
                     </div>
                 </div>
+
+                <h1 className='accoutActionsSectionTitle'>Действия с аккаунтом</h1>
+                <hr className='accoutActionsDividerLineStart'/>
+                <button className='logOutButton' onClick={() => logOutButtonHandle()}>Выйти из аккаунта</button>
             </div>
         );
     } else if (openedSection === 'patients') {

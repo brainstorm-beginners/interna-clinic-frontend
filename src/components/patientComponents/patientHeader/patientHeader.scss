@@ -65,4 +65,22 @@ a {
             }
         }
     }
+
+    .logOutButton {
+        display: block;
+        position: absolute;
+        width: clamp(30px, 2.3vw, 40px) !important;
+        height: clamp(30px, 2.3vw, 40px) !important;
+        transition: 0.2s all ease-in-out;
+        left: 95%;
+
+        &:hover {
+            cursor: pointer;
+            transform: scale(1.05);
+        }
+
+        @media only screen and (max-width: 1150px) {
+            display: none;
+        }
+    }
 }
