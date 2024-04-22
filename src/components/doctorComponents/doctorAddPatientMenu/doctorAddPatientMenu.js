@@ -117,10 +117,10 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                                                                                 'Cпонтанные шунты (Анастомозы между левой ветвью воротной вены и сосудами передней брюшной стенки)',
                                                                                 'Cпонтанные шунты (Между прямокишечным сплетением и нижней полой веной)', 'Нет данных'],
                                                                                 translation: 'Портосистемное шунтирование', required: true, data_type: 'str'},
-        thrombosis: {type: 'enum', options: ['Тромбоз воротной вены', 'Тромбоз печеночных вен', 'Оба варианта', 'Нет'], translation: 'Тромбоз', required: true, data_type: 'str'},
+        thrombosis: {type: 'multiple', options: ['Тромбоз воротной вены', 'Тромбоз печеночных вен', 'Нет'], translation: 'Тромбоз', required: true, data_type: 'str'},
         medicines: {type: 'multiple', options: ['Прием бензодиазепин', 'Прием опиодов', 'ИПП', 'Нет'], translation: 'ЛС', required: true, data_type: 'str'},
         renal_impairment: {type: 'enum', options: ['Да', 'Нет'], translation: 'Почечная недостаточность', required: true, data_type: 'str'},
-        bad_habits: {type: 'enum', options: ['Табакокурение', 'Злоупотреблением алкоголем', 'Оба варианта', 'Нет'], translation: 'Вредные привычки', required: true, data_type: 'str'}, //
+        bad_habits: {type: 'multiple', options: ['Табакокурение', 'Злоупотреблением алкоголем', 'Нет'], translation: 'Вредные привычки', required: true, data_type: 'str'}, //
         CP: {type: 'enum', options: ['Имелась', 'Отсутствовала'], translation: 'Приверженность к лечению по ЦП', required: true, data_type: 'str'},
         accepted_PE_medications: {type: 'input', translation: 'Лекарственные препараты, принимаемые ранее по ПЭ Список принимаемых ЛС по ПЭ', required: false, data_type: 'str',
                                                                                                                                                     default: 'Нет'},
@@ -138,21 +138,22 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
             } else {
                 switch (field.data_type) {
                 case 'float':
-                    initialData[fieldKey] = 0.00;
+                    initialData[fieldKey] = field.required ? '' : 0.00;
                     break;
                 case 'str':
                     initialData[fieldKey] = field.type === 'multiple' ? [] : '';
                     break;
                 case 'int':
-                    initialData[fieldKey] = 0;
+                    initialData[fieldKey] = field.required ? '' : 0;
                     break;
                 default:
                     initialData[fieldKey] = '';
                 }
             }
         });
+    
         return initialData;
-    });        
+    });                
 
     useEffect(() => {
         if (redirectTo) {
@@ -219,12 +220,19 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
         const traverseFields = (data, fieldPath) => {
             for (let key in data) {
                 console.log("CHECKING... " + key + " | VALUE: " + data[key])
-                if (typeof data[key] === 'object' && data[key] !== null) {
+                if (Array.isArray(data[key])) {
+                    const fieldTranslation = fields[key]?.translation || key;
+
+                    if (fields[key]?.required && data[key].length === 0) {
+                        console.log("OOOPS ERROR HERE")
+                        throw new Error(`Поле '${fieldTranslation}' является обязательным и должно быть заполнено.`);
+                    }
+                } else if (typeof data[key] === 'object' && data[key] !== null) {
                     console.log("IT SEEMS LIKE IT'S OBJECT, OBVIOUSLY...")
                     traverseFields(data[key], fieldPath ? `${fieldPath}.${key}` : key);
                 } else {
-                    const fieldTranslation = fields[key]?.translation || key; // Получаем перевод поля или используем ключ, если перевода нет
-                    
+                    const fieldTranslation = fields[key]?.translation || key;
+    
                     if (fields[key]?.required && (data[key] === undefined || data[key] === null || data[key] === '' || (Array.isArray(data[key]) && data[key].length === 0))) {
                         console.log("OOOPS ERROR HERE")
                         throw new Error(`Поле '${fieldTranslation}' является обязательным и должно быть заполнено.`);
@@ -243,6 +251,10 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                         console.log("OOOPS ERROR HERE")
                         throw new Error(`Поле '${fieldTranslation}' должно быть числом.`);
                     }
+                    if (fields[key]?.type === 'multiple' && data[key].length === 0) {
+                        console.log("OOOPS ERROR HERE")
+                        throw new Error(`Поле '${fieldTranslation}' должно быть выбрано хотя бы одно значение.`);
+                    }
                 }
             }
         };
@@ -254,7 +266,7 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
             console.log("ERROR FIELD: " + error.message.split(' ')[1])
             return error.message; // Верните имя поля с ошибкой
         }
-    };    
+    };        
     
     const addPatientToDb = async () => {
         const handleLogout = () => {

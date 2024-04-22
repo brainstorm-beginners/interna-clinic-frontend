@@ -10,6 +10,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
     const [patientData, setPatientData] = useState({});
     const [updatedPatientData, setUpdatedPatientData] = useState(patientData);
     const [newPassword, setNewPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const fields = {
         // NOT REQUIRED
@@ -122,10 +123,10 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
                                                                                 'Cпонтанные шунты (Анастомозы между левой ветвью воротной вены и сосудами передней брюшной стенки)',
                                                                                 'Cпонтанные шунты (Между прямокишечным сплетением и нижней полой веной)', 'Нет данных'],
                                                                                 translation: 'Портосистемное шунтирование', required: true, data_type: 'str'},
-        thrombosis: {type: 'enum', options: ['Тромбоз воротной вены', 'Тромбоз печеночных вен', 'Оба варианта', 'Нет'], translation: 'Тромбоз', required: true, data_type: 'str'},
+        thrombosis: {type: 'multiple', options: ['Тромбоз воротной вены', 'Тромбоз печеночных вен', 'Нет'], translation: 'Тромбоз', required: true, data_type: 'str'},
         medicines: {type: 'multiple', options: ['Прием бензодиазепин', 'Прием опиодов', 'ИПП', 'Нет'], translation: 'ЛС', required: true, data_type: 'str'},
         renal_impairment: {type: 'enum', options: ['Да', 'Нет'], translation: 'Почечная недостаточность', required: true, data_type: 'str'},
-        bad_habits: {type: 'enum', options: ['Табакокурение', 'Злоупотребление алкоголем', 'Оба варианта', 'Нет'], translation: 'Вредные привычки', required: true, data_type: 'str'},
+        bad_habits: {type: 'multiple', options: ['Табакокурение', 'Злоупотребление алкоголем', 'Нет'], translation: 'Вредные привычки', required: true, data_type: 'str'},
         CP: {type: 'enum', options: ['Имелась', 'Отсутствовала'], translation: 'Приверженность к лечению по ЦП', required: true, data_type: 'str'},
         accepted_PE_medications: {type: 'input', translation: 'Лекарственные препараты, принимаемые ранее по ПЭ Список принимаемых ЛС по ПЭ', required: true, data_type: 'str'},
         accepted_medications_at_the_time_of_inspection: {type: 'input', translation: 'Лекарственные препараты, принимаемые на момент осмотра', required: true, data_type: 'str'},                                                                   
@@ -212,7 +213,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
         setPatientData(prevPatientData => {
             let updatedPatientData = {...prevPatientData};
     
-            if (updatedValue === '' && !field.required) {
+            if (updatedValue === '') {
                 switch (field.data_type) {
                     case 'int':
                         updatedValue = 0;
@@ -258,7 +259,51 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
             const updatedPatientData = {...prevPatientData, [fieldName]: updatedValue};
             return updatedPatientData;
         });
-    };        
+    };
+    
+    const areAllFieldsValid = (patientToAddFinalData, fields) => {
+        const traverseFields = (data, fieldPath) => {
+            for (let key in data) {
+                console.log("CHECKING... " + key + " | VALUE: " + data[key])
+                if (Array.isArray(data[key])) {
+                    const fieldTranslation = fields[key]?.translation || key;
+
+                    if (data[key].length === 0) {
+                        console.log("OOOPS ERROR HERE")
+                        throw new Error(`Поле '${fieldTranslation}' является обязательным и должно быть заполнено.`);
+                    }
+                } else if (typeof data[key] === 'object' && data[key] !== null) {
+                    console.log("IT SEEMS LIKE IT'S OBJECT, OBVIOUSLY...")
+                    traverseFields(data[key], fieldPath ? `${fieldPath}.${key}` : key);
+                } else {
+                    const fieldTranslation = fields[key]?.translation || key;
+        
+                    if (key === 'IIN') {
+                        if (!/^\d{12}$/.test(data[key])) {
+                            console.log("OOOPS ERROR HERE")
+                            throw new Error(`Поле '${fieldTranslation}' должно содержать ровно 12 цифр.`);
+                        }
+                    }
+                    if (fields[key]?.data_type === 'int' && !Number.isInteger(Number(data[key]))) {
+                        console.log("OOOPS ERROR HERE")
+                        throw new Error(`Поле '${fieldTranslation}' должно быть целым числом.`);
+                    }
+                    if (fields[key]?.data_type === 'float' && isNaN(Number(data[key]))) {
+                        console.log("OOOPS ERROR HERE")
+                        throw new Error(`Поле '${fieldTranslation}' должно быть числом.`);
+                    }
+                }
+            }
+        };
+    
+        try {
+            traverseFields(patientToAddFinalData, '');
+        } catch (error) {
+            console.error(error.message);
+            console.log("ERROR FIELD: " + error.message.split(' ')[1])
+            return error.message; // Верните имя поля с ошибкой
+        }
+    };    
 
     const savePatientData = async () => {
         const handleLogout = () => {
@@ -288,6 +333,17 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
             }
         }
 
+        if (!newPassword) {
+            updatedPatientData['password'] = '';
+        }
+        
+        console.log("FINAL PATIENT DATA: " + JSON.stringify({...patientData, ...updatedPatientData}));
+        const errorFieldMessage = areAllFieldsValid({...patientData, ...updatedPatientData}, fields);
+        if (errorFieldMessage) {
+            setErrorMessage(errorFieldMessage);
+            return;
+        }
+
         if (updatedPatientData.weight && updatedPatientData.height) {
             const weight = updatedPatientData.weight;
             const height = updatedPatientData.height / 100;
@@ -298,10 +354,6 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
             const height = patientData.height / 100;
             const BMI = weight / (height * height);
             updatedPatientData.BMI = BMI;
-        }
-
-        if (!newPassword) {
-            updatedPatientData['password'] = '';
         }
       
         try {
@@ -505,6 +557,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
                 </div>
             )}
             <button className='patientDataSaveButton' onClick={() => savePatientData()}>СОХРАНИТЬ</button>
+            <p className='errorMessage'>{errorMessage}</p>
         </div>
     );        
 }
