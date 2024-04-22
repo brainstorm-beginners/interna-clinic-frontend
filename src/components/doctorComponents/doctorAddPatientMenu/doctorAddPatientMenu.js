@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import './doctorAddPatientMenu.scss';
 import CloseIcon from './icons/closeIcon.png';
 import AuthContext from '../../../auth/authContext';
@@ -6,8 +6,7 @@ import { Navigate } from 'react-router-dom';
 
 const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatientsData, setDoctorsPatientsData}) => {
     const { refresh, setIsAuthenticated, redirectTo, setRedirectTo } = useContext(AuthContext);
-    const [patientDataFromForm, setPatientDataFromForm] = useState({});
-    const [errorMessage, setErrorMessage] = useState(''); 
+    const [errorMessage, setErrorMessage] = useState('');
 
     const fields = {
         // NOT REQUIRED
@@ -17,7 +16,7 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
         first_name: {type: 'input', translation: 'Имя', required: true, data_type: 'str'},
         last_name: {type: 'input', translation: 'Фамилия', required: true, data_type: 'str'},
         middle_name: {type: 'input', translation: 'Отчество', required: true, data_type: 'str'},
-        IIN: {type: 'input', translation: 'ИИН', required: true, data_type: 'str'},
+        IIN: {type: 'input', translation: 'ИИН', required: true, data_type: 'int'},
         password: {type: 'input', translation: 'Пароль', required: true, data_type: 'str'},
         age: {type: 'input', translation: 'Возраст', required: true, data_type: 'int'},
         gender: {type: 'enum', options: ['Мужской', 'Женский'], translation: 'Пол', required: true, data_type: 'str'},
@@ -27,7 +26,7 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
         weight: {type: 'input', translation: 'Вес (в килограммах)', required: true, data_type: 'int'},
         // BMI: {type: 'input', translation: 'Индекс массы тела'}
         education: {type: 'enum', options: ['Не оконченное среднее', 'Среднее', 'Высшее'], translation: 'Уровень образования', required: true, data_type: 'str'},
-        marital_status: {type: 'enum', options: ['Не замужем/не женат ', 'Замужем/Женат', 'Разведен/вдова/вдовец'], translation: 'Семейное положение', required: true,
+        marital_status: {type: 'enum', options: ['Не замужем/не женат', 'Замужем/Женат', 'Разведен/вдова/вдовец'], translation: 'Семейное положение', required: true,
                                                                                                                                                     data_type: 'str'},
         job_description: {type: 'enum', options: ['С точными механизмами', 'Офисная', 'С активной физической нагрузкой', 'Не работаю', 'Другое'],
                                                                                                                         translation: 'С чем связана работа', required: true,
@@ -121,7 +120,7 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
         thrombosis: {type: 'enum', options: ['Тромбоз воротной вены', 'Тромбоз печеночных вен', 'Оба варианта', 'Нет'], translation: 'Тромбоз', required: true, data_type: 'str'},
         medicines: {type: 'multiple', options: ['Прием бензодиазепин', 'Прием опиодов', 'ИПП', 'Нет'], translation: 'ЛС', required: true, data_type: 'str'},
         renal_impairment: {type: 'enum', options: ['Да', 'Нет'], translation: 'Почечная недостаточность', required: true, data_type: 'str'},
-        bad_habits: {type: 'enum', options: ['Табакокурение', 'Злоупотребление алкоголем', 'Оба варианта', 'Нет'], translation: 'Вредные привычки', required: true, data_type: 'str'},
+        bad_habits: {type: 'enum', options: ['Табакокурение', 'Злоупотреблением алкоголем', 'Оба варианта', 'Нет'], translation: 'Вредные привычки', required: true, data_type: 'str'}, //
         CP: {type: 'enum', options: ['Имелась', 'Отсутствовала'], translation: 'Приверженность к лечению по ЦП', required: true, data_type: 'str'},
         accepted_PE_medications: {type: 'input', translation: 'Лекарственные препараты, принимаемые ранее по ПЭ Список принимаемых ЛС по ПЭ', required: false, data_type: 'str',
                                                                                                                                                     default: 'Нет'},
@@ -160,17 +159,17 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
             setRedirectTo(null);
         }
     }, [redirectTo, setRedirectTo]);
-
+    
     const handleInputChange = (fieldName, event) => {
         const field = fields[fieldName]
     
-        if (event.target.value !== "Выберите опцию..." && field.required) {
+        if (event.target.value !== "" && field.required) {
             event.target.classList.remove('not-selected');
         }
-    
+        
         if (event.target.value === "" && field.required) {
             event.target.classList.add('not-selected');
-        }
+        }        
     
         setFormData(prevFormData => {
             let updatedValue = event.target.value;
@@ -203,6 +202,7 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
     }, [formData]); 
     
     const handleCheckboxChange = (fieldName, option, event) => {
+
         setFormData(prevFormData => {
             let updatedValue = prevFormData[fieldName] ? [...prevFormData[fieldName]] : [];
             if (event.target.checked) {
@@ -213,8 +213,49 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
             const updatedFormData = {...prevFormData, [fieldName]: updatedValue};
             return updatedFormData;
         });
-    };       
+    };
 
+    const areAllFieldsValid = (patientToAddFinalData, fields) => {
+        const traverseFields = (data, fieldPath) => {
+            for (let key in data) {
+                console.log("CHECKING... " + key + " | VALUE: " + data[key])
+                if (typeof data[key] === 'object' && data[key] !== null) {
+                    console.log("IT SEEMS LIKE IT'S OBJECT, OBVIOUSLY...")
+                    traverseFields(data[key], fieldPath ? `${fieldPath}.${key}` : key);
+                } else {
+                    const fieldTranslation = fields[key]?.translation || key; // Получаем перевод поля или используем ключ, если перевода нет
+                    
+                    if (fields[key]?.required && (data[key] === undefined || data[key] === null || data[key] === '' || (Array.isArray(data[key]) && data[key].length === 0))) {
+                        console.log("OOOPS ERROR HERE")
+                        throw new Error(`Поле '${fieldTranslation}' является обязательным и должно быть заполнено.`);
+                    }
+                    if (key === 'IIN') {
+                        if (!/^\d{12}$/.test(data[key])) {
+                            console.log("OOOPS ERROR HERE")
+                            throw new Error(`Поле '${fieldTranslation}' должно содержать ровно 12 цифр.`);
+                        }
+                    }
+                    if (fields[key]?.data_type === 'int' && !Number.isInteger(Number(data[key]))) {
+                        console.log("OOOPS ERROR HERE")
+                        throw new Error(`Поле '${fieldTranslation}' должно быть целым числом.`);
+                    }
+                    if (fields[key]?.data_type === 'float' && isNaN(Number(data[key]))) {
+                        console.log("OOOPS ERROR HERE")
+                        throw new Error(`Поле '${fieldTranslation}' должно быть числом.`);
+                    }
+                }
+            }
+        };
+    
+        try {
+            traverseFields(patientToAddFinalData, '');
+        } catch (error) {
+            console.error(error.message);
+            console.log("ERROR FIELD: " + error.message.split(' ')[1])
+            return error.message; // Верните имя поля с ошибкой
+        }
+    };    
+    
     const addPatientToDb = async () => {
         const handleLogout = () => {
             setIsAuthenticated(false);
@@ -223,22 +264,16 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
         };
-
-        const patientToAddFinalData = {
-            ...formData,
-            BMI: (formData['weight'] / ((formData['height'] / 100) * (formData['height'] / 100))).toFixed(2),
-            doctor_id: doctorId
-        };
-
+    
         const currentUserData = localStorage.getItem('currentUserData');
         let accessToken = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
-
+    
         if (!currentUserData) {
             handleLogout();
             return;
         }
-
+    
         if (!accessToken) {
             if (refreshToken) {
                 await refresh();
@@ -248,7 +283,19 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                 return;
             }
         }
-
+        
+        const errorFieldMessage = areAllFieldsValid(formData, fields);
+        if (errorFieldMessage) {
+            setErrorMessage(errorFieldMessage);
+            return;
+        }
+        
+        const patientToAddFinalData = {
+            ...formData,
+            BMI: (formData['weight'] / ((formData['height'] / 100) * (formData['height'] / 100))).toFixed(2),
+            doctor_id: doctorId
+        };
+    
         try {
             let response = await fetch(`http://localhost:8080/api/v1/patients/register`, {
                 method: 'POST',
@@ -260,7 +307,7 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                     ...patientToAddFinalData
                 })
             });
-
+    
             if (!response.ok && response.status === 401) {
                 try {
                     await refresh();
@@ -275,7 +322,7 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                             ...patientToAddFinalData
                         })
                     });
-
+    
                     const recievedPatientData = await response.json()
                     closeAddPatientMenuHandle();
                     setDoctorsPatientsData([recievedPatientData, ...doctorsPatientsData])
@@ -283,12 +330,16 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                     handleLogout();
                 }
             } else {
+                console.log("\n\n\n\n\nRESPONSE STATUS: " + response.status)
                 switch (response.status) {
                     case 422:
-                        setErrorMessage('Ошибка при добавлении пациента. Заполните все поля.');
+                        setErrorMessage('Ошибка при добавлении пациента. Проверьте все поля.');
                         break;
                     case 409:
                         setErrorMessage('Пациент с таким ИИН уже существует в базе данных.');
+                        break;
+                    case 500:
+                        setErrorMessage('Возникла какая-то ошибка. Попробуйте позже.');
                         break;
                     default:
                         const recievedPatientData = await response.json()
@@ -300,7 +351,8 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
         } catch (error) {
             console.log("An error ocured while trying to fetch the patient data.")
         }
-    }
+    };
+    
 
     if (redirectTo) {
         return <Navigate to={redirectTo} replace />;
@@ -312,82 +364,81 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                 <img src={CloseIcon} className='closeDoctorAddPatientMenuButton' alt='' onClick={closeAddPatientMenuHandle} />
             </div>
             <div className='patientDataInputsList'>
-                {Object.keys(fields).map((fieldKey) => {
-                    const field = fields[fieldKey];
-                    // These fields will be displayed only with need from 'enum_exapndable' selects. Now they're ignored and won't be displayed.
-                    const not_to_display_fields = ['is_on_controlled', 'number_of_planned_hospitalizations_with_liver_diseases', 'number_of_planned_hospitalizations_without_liver_diseases', 'number_of_emergency_hospitalizations_with_liver_diseases', 'number_of_emergency_hospitalizations_without_liver_diseases']
-                    if (not_to_display_fields.includes(fieldKey)) {
-                        return null;
-                    }
-                    if (field.type === 'enum' || field.type === 'enum_expandable') {
-                        return (
-                            <div className='patidentDataInputsWrapper' key={fieldKey}>
-                                <label className='patientDataLabel'>{field.translation || fieldKey}</label>
-                                <select className={`patidentDataSelect ${!field.required ? '' : 'not-selected'}`} onChange={(event) => handleInputChange(fieldKey, event)}>
-                                    {field.default 
-                                        ? <option value={field.default}>{field.default}</option>
-                                        : <option value="">Выберите опцию...</option>
-                                    }
-                                    {field.options.map(option => {
-                                        if (typeof option === 'object') {
-                                            return Object.keys(option).map(key => (
-                                                <option key={key} value={key}>{key}</option>
-                                            ));
-                                        } else if (option !== field.default) {
-                                            return <option key={option} value={option}>{option}</option>
-                                        }
-                                    })}
-                                </select>
-                                {field.type === 'enum_expandable' && field.options.map(option => {
-                                    if (typeof option === 'object' && Object.keys(option).includes(formData[fieldKey])) {
-                                        return (
-                                            <div className='patidentDataInputsWrapper' key={fieldKey}>
-                                                <label className='patientDataLabel' style={{marginTop: '20px'}}>
-                                                    {fields[Object.values(option)[0]].translation || fieldKey}
-                                                </label>
-                                                <input className='patidentDataInput' onChange={(event) => handleInputChange(Object.values(option)[0], event)} />
-                                            </div>
-                                        );
+            {Object.keys(fields).map((fieldKey) => {
+                const field = fields[fieldKey];
+                const not_to_display_fields = ['is_on_controlled', 'number_of_planned_hospitalizations_with_liver_diseases', 'number_of_planned_hospitalizations_without_liver_diseases', 'number_of_emergency_hospitalizations_with_liver_diseases', 'number_of_emergency_hospitalizations_without_liver_diseases']
+                if (not_to_display_fields.includes(fieldKey)) {
+                    return null;
+                }
+                if (field.type === 'enum' || field.type === 'enum_expandable') {
+                    return (
+                        <div className='patidentDataInputsWrapper' key={fieldKey}>
+                            <label className='patientDataLabel'>{field.translation || fieldKey}</label>
+                            <select className={`patidentDataSelect ${!field.required ? '' : 'not-selected'}`} onChange={(event) => handleInputChange(fieldKey, event)}>
+                                {field.default 
+                                    ? <option value={field.default}>{field.default}</option>
+                                    : <option value="">Выберите опцию...</option>
+                                }
+                                {field.options.map(option => {
+                                    if (typeof option === 'object') {
+                                        return Object.keys(option).map(key => (
+                                            <option key={key} value={key}>{key}</option>
+                                        ));
+                                    } else if (option !== field.default) {
+                                        return <option key={option} value={option}>{option}</option>
                                     }
                                 })}
-                            </div>   
-                        );
-                    } else if (field.type === 'input') {
-                        return (
-                            <div className='patidentDataInputsWrapper' key={fieldKey}>
-                                <label className='patientDataLabel'>{field.translation || fieldKey}</label>
-                                <input className={`patidentDataInput ${!field.required ? '' : 'not-selected'}`} onChange={(event) => handleInputChange(fieldKey, event)} />
-                            </div>
-                        );
-                    } else if (field.type === 'multiple') {
-                        const otherOptionsSelected = formData[fieldKey].some(option => option !== 'Нет' && option !== 'Нет данных');
-                        const noDataOptionsSelected = formData[fieldKey].includes('Нет') || formData[fieldKey].includes('Нет данных');
-                        const anyOptionSelected = formData[fieldKey].length > 0;
-
-                        return (
-                            <div className='patidentDataInputsWrapper' key={fieldKey}>
-                                <label className='patientDataLabel'>{field.translation || fieldKey}</label>
-                                <div className={`patidentDataCheckBoxesWrapper ${field.required && !anyOptionSelected ? 'not-selected' : ''}`}>
-                                    {field.options.map((option, index) => (
-                                        <div key={index}>
-                                            <input 
-                                                type='checkbox' 
-                                                id={`${fieldKey}_${index}`} 
-                                                name={fieldKey} 
-                                                value={option}
-                                                checked={formData[fieldKey].includes(option)}
-                                                onChange={event => handleCheckboxChange(fieldKey, option, event)}
-                                                disabled={(otherOptionsSelected && (option === 'Нет' || option === 'Нет данных')) || (noDataOptionsSelected && option !== 'Нет' && option !== 'Нет данных')}
-                                            />
-                                            <label htmlFor={`${fieldKey}_${index}`}>{option}</label>
+                            </select>
+                            {field.type === 'enum_expandable' && field.options.map(option => {
+                                if (typeof option === 'object' && Object.keys(option).includes(formData[fieldKey])) {
+                                    return (
+                                        <div className='patidentDataInputsWrapper' key={fieldKey}>
+                                            <label className='patientDataLabel' style={{marginTop: '20px'}}>
+                                                {fields[Object.values(option)[0]].translation || fieldKey}
+                                            </label>
+                                            <input className={`patidentDataInput`} onChange={(event) => handleInputChange(Object.values(option)[0], event)} />
                                         </div>
-                                    ))}
-                                </div>
+                                    );
+                                }
+                            })}
+                        </div>   
+                    );
+                } else if (field.type === 'input') {
+                    return (
+                        <div className='patidentDataInputsWrapper' key={fieldKey}>
+                            <label className='patientDataLabel'>{field.translation || fieldKey}</label>
+                            <input className={`patidentDataInput ${!field.required ? '' : 'not-selected'}`} onChange={(event) => handleInputChange(fieldKey, event)} />
+                        </div>
+                    );
+                } else if (field.type === 'multiple') {
+                    const otherOptionsSelected = formData[fieldKey].some(option => option !== 'Нет' && option !== 'Нет данных');
+                    const noDataOptionsSelected = formData[fieldKey].includes('Нет') || formData[fieldKey].includes('Нет данных');
+                    const anyOptionSelected = formData[fieldKey].length > 0;
+
+                    return (
+                        <div className='patidentDataInputsWrapper' key={fieldKey}>
+                            <label className='patientDataLabel'>{field.translation || fieldKey}</label>
+                            <div className={`patidentDataCheckBoxesWrapper ${field.required && !anyOptionSelected ? 'not-selected' : ''}`}>
+                                {field.options.map((option, index) => (
+                                    <div key={index}>
+                                        <input 
+                                            type='checkbox' 
+                                            id={`${fieldKey}_${index}`} 
+                                            name={fieldKey} 
+                                            value={option}
+                                            checked={formData[fieldKey].includes(option)}
+                                            onChange={event => handleCheckboxChange(fieldKey, option, event)}
+                                            disabled={(otherOptionsSelected && (option === 'Нет' || option === 'Нет данных')) || (noDataOptionsSelected && option !== 'Нет' && option !== 'Нет данных')}
+                                        />
+                                        <label htmlFor={`${fieldKey}_${index}`}>{option}</label>
+                                    </div>
+                                ))}
                             </div>
-                        );
-                    }
-                    return null;
-                })}
+                        </div>
+                    );
+                }
+                return null;
+            })}
             </div>
             <button className='addPatientButton' onClick={() => addPatientToDb()}>ДОБАВИТЬ ПАЦИЕНТА</button>
             <p className='errorMessage'>{errorMessage}</p>
