@@ -37,7 +37,7 @@ const AuthProvider = ({ children }) => {
         } else if (role === "Doctor") {
             setRedirectTo(`/doctor/${login}/account`);
         } else if (role === "Admin") {
-            setRedirectTo(`/admin_page/${login}`);
+            setRedirectTo(`/admin/${login}/all_patients`);
         }
 
         return response;

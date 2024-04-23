@@ -1,11 +1,13 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import './doctorAddPatientMenu.scss';
+import './adminAddPatientMenu.scss';
 import CloseIcon from './icons/closeIcon.png';
 import AuthContext from '../../../auth/authContext';
 import { Navigate } from 'react-router-dom';
 
-const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatientsData, setDoctorsPatientsData}) => {
+const AdminAddPatientMenu = ({closeAddPatientMenuHandle, patientsData, setPatientsData}) => {
     const { refresh, setIsAuthenticated, redirectTo, setRedirectTo } = useContext(AuthContext);
+    const [doctorsData, setDoctorsData] = useState([]);
+    const [dataLoading, setDataLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
 
     const fields = {
@@ -13,6 +15,7 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
         is_on_controlled: {type: 'enum', options: ['Да', 'Нет', 'Нет данных'], translation: 'Будет ли на контроле', required: false, data_type: 'str', default: 'Нет данных'},
 
         // REQUIRED
+        doctor_id: {type: 'enum', options: [], translation: 'Выберите врача', required: true, data_type: 'int'},
         first_name: {type: 'input', translation: 'Имя', required: true, data_type: 'str'},
         last_name: {type: 'input', translation: 'Фамилия', required: true, data_type: 'str'},
         middle_name: {type: 'input', translation: 'Отчество', required: true, data_type: 'str'},
@@ -160,6 +163,74 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
             setRedirectTo(null);
         }
     }, [redirectTo, setRedirectTo]);
+
+    useEffect(() => {
+        const fetchDoctorsData = async () => {
+            const currentUserData = localStorage.getItem('currentUserData');
+            let accessToken = localStorage.getItem('accessToken');
+            const refreshToken = localStorage.getItem('refreshToken');
+    
+            const handleLogout = () => {
+                setIsAuthenticated(false);
+                setRedirectTo('/login');
+                localStorage.removeItem('currentUserData');
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+            };
+    
+            if (!currentUserData) {
+                handleLogout();
+                return;
+            }
+    
+            if (!accessToken) {
+                if (refreshToken) {
+                    await refresh();
+                    accessToken = localStorage.getItem('accessToken');
+                } else {
+                    handleLogout();
+                    return;
+                }
+            }
+    
+            try {
+                let response = await fetch(`http://localhost:8080/api/v1/doctors`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + accessToken
+                    }
+                });
+    
+                if (!response.ok && response.status === 401) {
+                    try {
+                        await refresh();
+                        accessToken = localStorage.getItem('accessToken');
+                        response = await fetch(`http://localhost:8080/api/v1/doctors`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + accessToken
+                            }
+                        });
+                        const doctorsData = await response.json();
+                        setDoctorsData(doctorsData);
+                        setDataLoading(false);
+                    } catch (error) {
+                        handleLogout();
+                    }
+                } else {
+                    const doctorsData = await response.json();
+                    setDoctorsData(doctorsData);
+                    setDataLoading(false);
+                }
+            } catch (error) {
+                console.log("An error ocured while trying to fetch the doctors data.")
+            }
+        };
+
+        fetchDoctorsData();
+    }, [refresh, setIsAuthenticated, setRedirectTo])
     
     const handleInputChange = (fieldName, event) => {
         const field = fields[fieldName]
@@ -305,7 +376,6 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
         const patientToAddFinalData = {
             ...formData,
             BMI: (formData['weight'] / ((formData['height'] / 100) * (formData['height'] / 100))).toFixed(2),
-            doctor_id: doctorId
         };
     
         try {
@@ -337,7 +407,7 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
     
                     const recievedPatientData = await response.json()
                     closeAddPatientMenuHandle();
-                    setDoctorsPatientsData([recievedPatientData, ...doctorsPatientsData])
+                    setPatientsData([recievedPatientData, ...patientsData])
                 } catch (error) {
                     handleLogout();
                 }
@@ -356,7 +426,7 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                     default:
                         const recievedPatientData = await response.json()
                         closeAddPatientMenuHandle();
-                        setDoctorsPatientsData([recievedPatientData, ...doctorsPatientsData])
+                        setPatientsData([recievedPatientData, ...patientsData])
                         closeAddPatientMenuHandle();
                 }            
             }
@@ -371,9 +441,9 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
     }
 
     return (
-        <div className="doctorAddPatientMenuBox">
-            <div className='doctorAddPatientMenuHeaderBox'>
-                <img src={CloseIcon} className='closeDoctorAddPatientMenuButton' alt='' onClick={closeAddPatientMenuHandle} />
+        <div className="adminAddPatientMenuBox">
+            <div className='adminAddPatientMenuHeaderBox'>
+                <img src={CloseIcon} className='closeAdminAddPatientMenuButton' alt='' onClick={closeAddPatientMenuHandle} />
             </div>
             <div className='patientDataInputsList'>
                 {Object.keys(fields).map((fieldKey) => {
@@ -391,7 +461,11 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                                         ? <option value={field.default}>{field.default}</option>
                                         : <option value="">Выберите опцию...</option>
                                     }
-                                    {field.options.map(option => {
+                                    {fieldKey === 'doctor_id' ? doctorsData.map((doctor) => (
+                                        <option key={doctor.id} value={doctor.id}>
+                                            {`${doctor.last_name} ${doctor.first_name} ${doctor.middle_name}`}
+                                        </option>
+                                    )) : field.options.map(option => {
                                         if (typeof option === 'object') {
                                             return Object.keys(option).map(key => (
                                                 <option key={key} value={key}>{key}</option>
@@ -458,4 +532,4 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
     );        
 }
   
-export default DoctorAddPatientMenu;
+export default AdminAddPatientMenu;

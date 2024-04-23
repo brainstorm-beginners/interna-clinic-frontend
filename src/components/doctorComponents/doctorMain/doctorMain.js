@@ -278,17 +278,13 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                         }
                     });
                     const searchResults = await response.json();
-                    let searchResultsArray = [];
-                    searchResultsArray.push(searchResults);
-                    setSearchPatientsResults(searchResultsArray);
+                    setSearchPatientsResults(searchResults);
                 } catch (error) {
                     handleLogout();
                 }
             } else {
                 const searchResults = await response.json();
-                let searchResultsArray = [];
-                searchResultsArray.push(searchResults);
-                setSearchPatientsResults(searchResultsArray);
+                setSearchPatientsResults(searchResults);
             }
         } catch (error) {
             console.log("TEST: " + searchPatientsResults)
@@ -391,7 +387,7 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                 <div className='searchBarWrapper'>
                     <input 
                         className='searchBar' 
-                        placeholder='Найти пациента по ИИН' 
+                        placeholder='Найти пациента по ФИО или ИИН' 
                         type='search'
                         onChange={(event) => {
                             if (event.target.value === '') {
@@ -438,9 +434,8 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                         </React.Fragment>
                     ))}
 
-                    {searchPatientsResults && searchPatientsResults[0].detail === "Patient not found" && <p className='notFoundTextError'>Ничего не найдено</p>}
-
-                    {searchPatientsResults && searchPatientsResults.length > 0 && searchPatientsResults[0].detail !== "Patient not found" && searchPatientsResults.map(patient => (
+                    {searchPatientsResults && searchPatientsResults.detail === 'Patients not found' && <p className='notFoundTextError'>Ничего не найдено</p>}
+                    {searchPatientsResults && searchPatientsResults.length > 0 && searchPatientsResults.detail !== 'Patients not found' && searchPatientsResults.map(patient => (
                         <React.Fragment key={patient.id}>
                         {isDataEditorMenuOpened && <div className='blurBackground'></div>}
                         {isDataEditorMenuOpened && <DoctorPatientDataEditor

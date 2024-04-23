@@ -1,13 +1,14 @@
 import { useContext, useEffect, useState } from 'react';
-import './doctorPatientDataEditor.scss';
+import './adminPatientDataEditor.scss';
 import CloseIcon from './icons/closeIcon.png';
 import AuthContext from '../../../auth/authContext';
 import { Navigate } from 'react-router-dom';
 
-const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, doctorsPatientsData, setDoctorsPatientsData, searchPatientsResults, setSearchPatientsResults}) => {
+const AdminPatientDataEditor = ({closePatientDataEditorHandle, patientId, patientsData, setPatientsData, searchPatientsResults, setSearchPatientsResults}) => {
     const { refresh, setIsAuthenticated, redirectTo, setRedirectTo } = useContext(AuthContext);
     const [dataLoading, setDataLoading] = useState(true);
     const [patientData, setPatientData] = useState({});
+    const [doctorsData, setDoctorsData] = useState([]);
     const [updatedPatientData, setUpdatedPatientData] = useState(patientData);
     const [newPassword, setNewPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -17,6 +18,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
         is_on_controlled: {type: 'enum', options: ['Да', 'Нет', 'Нет данных'], translation: 'Будет ли на контроле', required: false, data_type: 'str', default: 'Нет данных'},
 
         // REQUIRED
+        doctor_id: {type: 'enum', options: [], translation: 'Выберите врача', required: true, data_type: 'int'},
         first_name: {type: 'input', translation: 'Имя', required: true, data_type: 'str'},
         last_name: {type: 'input', translation: 'Фамилия', required: true, data_type: 'str'},
         middle_name: {type: 'input', translation: 'Отчество', required: true, data_type: 'str'},
@@ -204,6 +206,72 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
         }
 
         fetchPatientData();
+
+        const fetchDoctorsData = async () => {
+            const currentUserData = localStorage.getItem('currentUserData');
+            let accessToken = localStorage.getItem('accessToken');
+            const refreshToken = localStorage.getItem('refreshToken');
+    
+            const handleLogout = () => {
+                setIsAuthenticated(false);
+                setRedirectTo('/login');
+                localStorage.removeItem('currentUserData');
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+            };
+    
+            if (!currentUserData) {
+                handleLogout();
+                return;
+            }
+    
+            if (!accessToken) {
+                if (refreshToken) {
+                    await refresh();
+                    accessToken = localStorage.getItem('accessToken');
+                } else {
+                    handleLogout();
+                    return;
+                }
+            }
+    
+            try {
+                let response = await fetch(`http://localhost:8080/api/v1/doctors`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + accessToken
+                    }
+                });
+    
+                if (!response.ok && response.status === 401) {
+                    try {
+                        await refresh();
+                        accessToken = localStorage.getItem('accessToken');
+                        response = await fetch(`http://localhost:8080/api/v1/doctors`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + accessToken
+                            }
+                        });
+                        const doctorsData = await response.json();
+                        setDoctorsData(doctorsData);
+                        setDataLoading(false);
+                    } catch (error) {
+                        handleLogout();
+                    }
+                } else {
+                    const doctorsData = await response.json();
+                    setDoctorsData(doctorsData);
+                    setDataLoading(false);
+                }
+            } catch (error) {
+                console.log("An error ocured while trying to fetch the doctors data.")
+            }
+        };
+
+        fetchDoctorsData();
     }, [patientId, refresh, setIsAuthenticated, setRedirectTo]) 
 
     const handleInputChange = (fieldName, event) => {
@@ -391,7 +459,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
                     });
 
                     const updatedPatientDataRecieved = await response.json();
-                    const updatedDoctorsPatientsData = doctorsPatientsData.map(patient => {
+                    const updatedDoctorsPatientsData = patientsData.map(patient => {
                         if (patient.id === updatedPatientDataRecieved.id) {
                             return updatedPatientDataRecieved;
                         }
@@ -408,7 +476,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
                         });
                     }
 
-                    setDoctorsPatientsData(updatedDoctorsPatientsData);
+                    setPatientsData(updatedDoctorsPatientsData);
                     setSearchPatientsResults(updatedSearchPatientsResults);
                     setPatientData(updatedPatientDataRecieved);
                     closePatientDataEditorHandle();
@@ -419,7 +487,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
                 }
             } else {
                 const updatedPatientDataRecieved = await response.json();
-                const updatedDoctorsPatientsData = doctorsPatientsData.map(patient => {
+                const updatedDoctorsPatientsData = patientsData.map(patient => {
                     if (patient.id === updatedPatientDataRecieved.id) {
                         return updatedPatientDataRecieved;
                     }
@@ -436,7 +504,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
                     });
                 }
 
-                setDoctorsPatientsData(updatedDoctorsPatientsData);
+                setPatientsData(updatedDoctorsPatientsData);
                 setSearchPatientsResults(updatedSearchPatientsResults);
                 setPatientData(updatedPatientDataRecieved);
                 closePatientDataEditorHandle();
@@ -493,7 +561,11 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
                                     <div className='patidentDataInputsWrapper' key={fieldKey}>
                                         <label className='patientDataLabel'>{field.translation || fieldKey}</label>
                                         <select className='patidentDataSelect' onChange={(event) => handleInputChange(fieldKey, event)} defaultValue={value}>
-                                            {field.options.map(option => {
+                                            {fieldKey === 'doctor_id' ? doctorsData.map((doctor) => (
+                                                <option key={doctor.id} value={doctor.id}>
+                                                    {`${doctor.last_name} ${doctor.first_name} ${doctor.middle_name}`}
+                                                </option>
+                                            )) : field.options.map(option => {
                                                 if (typeof option === 'object') {
                                                     return Object.keys(option).map(key => (
                                                         <option key={key} value={key}>{key}</option>
@@ -566,4 +638,4 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
     );        
 }
   
-export default DoctorPatientDataEditor;
+export default AdminPatientDataEditor;
