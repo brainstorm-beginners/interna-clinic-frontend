@@ -256,14 +256,14 @@ const AdminPatientDataEditor = ({closePatientDataEditorHandle, patientId, patien
                             }
                         });
                         const doctorsData = await response.json();
-                        setDoctorsData(doctorsData);
+                        setDoctorsData(doctorsData['data']);
                         setDataLoading(false);
                     } catch (error) {
                         handleLogout();
                     }
                 } else {
                     const doctorsData = await response.json();
-                    setDoctorsData(doctorsData);
+                    setDoctorsData(doctorsData['data']);
                     setDataLoading(false);
                 }
             } catch (error) {
@@ -373,7 +373,7 @@ const AdminPatientDataEditor = ({closePatientDataEditorHandle, patientId, patien
         } catch (error) {
             console.error(error.message);
             console.log("ERROR FIELD: " + error.message.split(' ')[1])
-            return error.message; // Верните имя поля с ошибкой
+            return error.message;
         }
     };    
 
@@ -538,10 +538,10 @@ const AdminPatientDataEditor = ({closePatientDataEditorHandle, patientId, patien
             </div>
             {patientData && (
                 <div className='patientDataInputsList'>
-                    <div className='patidentDataInputsWrapper' key='password'>
+                    <div className='patientDataInputsWrapper' key='password'>
                         <label className='patientDataLabel'>Пароль</label>
                         <input
-                            className='patidentDataInput'
+                            className='patientDataInput'
                             type='password'
                             placeholder='Введите новый пароль (необязательно)'
                             value={newPassword}
@@ -558,9 +558,9 @@ const AdminPatientDataEditor = ({closePatientDataEditorHandle, patientId, patien
                         if (field) {
                             if (field.type === 'enum' || field.type === 'enum_expandable') {
                                 return (
-                                    <div className='patidentDataInputsWrapper' key={fieldKey}>
+                                    <div className='patientDataInputsWrapper' key={fieldKey}>
                                         <label className='patientDataLabel'>{field.translation || fieldKey}</label>
-                                        <select className='patidentDataSelect' onChange={(event) => handleInputChange(fieldKey, event)} defaultValue={value}>
+                                        <select className='patientDataSelect' onChange={(event) => handleInputChange(fieldKey, event)} defaultValue={value}>
                                             {fieldKey === 'doctor_id' ? doctorsData.map((doctor) => (
                                                 <option key={doctor.id} value={doctor.id}>
                                                     {`${doctor.last_name} ${doctor.first_name} ${doctor.middle_name}`}
@@ -579,12 +579,12 @@ const AdminPatientDataEditor = ({closePatientDataEditorHandle, patientId, patien
                                             if (typeof option === 'object' && Object.keys(option).includes(patientData[fieldKey])) {
                                                 const inputKey = Object.values(option)[0]; // Получаем ключ для текущего input
                                                 return (
-                                                    <div className='patidentDataInputsWrapper' key={inputKey}>
+                                                    <div className='patientDataInputsWrapper' key={inputKey}>
                                                         <label className='patientDataLabel' style={{marginTop: '20px'}}>
                                                             {fields[inputKey].translation || inputKey}
                                                         </label>
                                                         <input
-                                                            className='patidentDataInput'
+                                                            className='patientDataInput'
                                                             placeholder={patientData[inputKey] || '0'}
                                                             onChange={(event) => handleInputChange(inputKey, event)} // Используем inputKey вместо жестко заданного ключа
                                                         />
@@ -596,9 +596,9 @@ const AdminPatientDataEditor = ({closePatientDataEditorHandle, patientId, patien
                                 );
                             } else if (field.type === 'input') {
                                 return (
-                                    <div className='patidentDataInputsWrapper' key={fieldKey}>
+                                    <div className='patientDataInputsWrapper' key={fieldKey}>
                                         <label className='patientDataLabel'>{field.translation || fieldKey}</label>
-                                        <input className='patidentDataInput' placeholder={value} onChange={(event) => handleInputChange(fieldKey, event)} />
+                                        <input className='patientDataInput' placeholder={value} onChange={(event) => handleInputChange(fieldKey, event)} />
                                     </div>
                                 );
                             } else if (field.type === 'multiple') {
@@ -607,9 +607,9 @@ const AdminPatientDataEditor = ({closePatientDataEditorHandle, patientId, patien
                                 const anyOptionSelected = patientData[fieldKey].length > 0;
 
                                 return (
-                                    <div className='patidentDataInputsWrapper' key={fieldKey}>
+                                    <div className='patientDataInputsWrapper' key={fieldKey}>
                                         <label className='patientDataLabel'>{field.translation || fieldKey}</label>
-                                        <div className={`patidentDataCheckBoxesWrapper ${anyOptionSelected ? '' : 'not-selected'}`}>
+                                        <div className={`patientDataCheckBoxesWrapper ${anyOptionSelected ? '' : 'not-selected'}`}>
                                             {field.options.map((option, index) => (
                                                 <div key={index}>
                                                     <input 

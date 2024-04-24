@@ -204,7 +204,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
         }
 
         fetchPatientData();
-    }, [patientId, refresh, setIsAuthenticated, setRedirectTo]) 
+    }, [patientId, refresh, setIsAuthenticated, setRedirectTo])
 
     const handleInputChange = (fieldName, event) => {
         const field = fields[fieldName];
@@ -305,7 +305,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
         } catch (error) {
             console.error(error.message);
             console.log("ERROR FIELD: " + error.message.split(' ')[1])
-            return error.message; // Верните имя поля с ошибкой
+            return error.message;
         }
     };    
 
@@ -456,7 +456,7 @@ const DoctorPatientDataEditor = ({closePatientDataEditorHandle, patientId, docto
         return (
             <div className="patientDataEditorBox" style={{display: "block"}}>
                 <div className='patientDataEditorHeaderBox'>
-                    <img src={CloseIcon} className='closePatientDataEditorButton' alt=''/>
+                    <img src={CloseIcon} className='closePatientDataEditorButton' alt='' onClick={closePatientDataEditorHandle}/>
                 </div>
                 <div className='dataEditorLoader'></div>
             </div>

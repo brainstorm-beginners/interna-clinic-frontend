@@ -33,7 +33,7 @@
     }
 }
 
-.patientDataEditorBox {
+.adminDataEditorBox {
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -53,13 +53,13 @@
     padding-bottom: 30px;
     overflow-x: hidden;
 
-    .patientDataEditorHeaderBox {
+    .adminDataEditorHeaderBox {
         width: 100%;
         height: max-content;
         padding: 10px;
     }
 
-    .closePatientDataEditorButton {
+    .closeAdminDataEditorButton {
         transition: 0.2s all ease-in-out;
 
         &:hover {
@@ -68,7 +68,7 @@
         }
     }
 
-    .patientDataInputsList {
+    .adminDataInputsList {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -76,13 +76,13 @@
         width: 100%;
     }
 
-    .patientDataInputsWrapper {
+    .adminDataInputsWrapper {
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 100%;
 
-        .patientDataLabel {
+        .adminDataLabel {
             color: grey;
             width: calc(80% - 40px);
             max-width: 100%;
@@ -91,7 +91,7 @@
             font-size: clamp(0.9rem, 1.3vw, 1.3rem) !important;
         }
 
-        .patientDataInput {
+        .adminDataInput {
             width: calc(80% - 40px);
             padding: 5px 10px;
             font-family: app.$basic-font-family;
@@ -101,7 +101,7 @@
             color: app.$dark-font-color;
         }
 
-        .patientDataSelect {
+        .adminDataSelect {
             width: calc(80% - 16px);
             padding: 5px 10px;
 
@@ -112,14 +112,14 @@
             color: app.$dark-font-color;
         }
 
-        .patientDataCheckBoxesWrapper {
+        .adminDataCheckBoxesWrapper {
             max-width: 100%;
             border: 2px solid transparent;
             padding: 25px;
         }   
     }
 
-    .patientDataSaveButton {
+    .adminDataSaveButton {
         height: max-content;
         width: max-content;
         padding: 15px 20px 13px 20px;

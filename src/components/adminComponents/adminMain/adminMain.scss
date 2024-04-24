@@ -36,6 +36,7 @@
     height: max-content;
     padding: 0px 0px 50px 0px;
     z-index: 0;
+    font-family: app.$basic-font-family;
 
     .blurBackground {
         position: fixed;
@@ -57,6 +58,27 @@
     .dataSectionDividerLineStart {
         border-color: app.$dark-blue-color;
         margin-bottom: 50px;
+    }
+
+    .accoutActionsSectionTitle {
+        display: none;
+        font-family: app.$basic-font-family;
+        font-size: clamp(0.9rem, 1.8vw, 1.5rem) !important;
+        margin-top: 70px;
+
+        @media only screen and (max-width: 1150px) {
+            display: block;
+        }
+    }
+
+    .accoutActionsDividerLineStart {
+        display: none;
+        border-color: app.$dark-blue-color;
+        margin-bottom: 50px;
+
+        @media only screen and (max-width: 1150px) {
+            display: block;
+        }
     }
 
     .logOutButton {
@@ -111,7 +133,7 @@
         }
     }
 
-    .addPatientButton {
+    .addPatientButton, .addDoctorButton, .addAdminButton {
         display: block;
         padding: 10px 15px;
         background-color: app.$white-color;
@@ -130,7 +152,7 @@
         }
     }
 
-    .patientsTable {
+    .patientsTable, .doctorsTable, .adminsTable {
         display: flex;
         flex-direction: column;
         max-width: 100%;
@@ -144,7 +166,7 @@
         font-family: app.$basic-font-family;
         font-size: clamp(0.6rem, 1.3vw, 1rem) !important;
 
-        .patientWrapper {
+        .patientWrapper, .doctorWrapper, .adminWrapper {
             display: flex;
             justify-content: space-between;
             width: calc(100% - 4vw);
@@ -154,26 +176,26 @@
             background-color: app.$white-color;
             border-radius: 4px;
 
-            .patientDataBox {
+            .patientDataBox, .doctorDataBox, .adminDataBox {
                 display: flex;
                 align-items: center;
                 gap: 20px;
                 height: 100%;
                 min-width: 30vw;
 
-                .patientAge {
+                .patientAge, .doctorAge, .adminUsername {
                     color: grey;
                 }
             }
 
-            .patientControlMenuWrapper {
+            .patientControlMenuWrapper, .doctorControlMenuWrapper, .adminControlMenuWrapper {
                 display: flex;
                 justify-content: space-evenly;
                 align-items: center;
                 min-width: 5vw;
                 width: max-content;
 
-                .deletePatientButton {
+                .deletePatientButton, .deleteDoctorButton, .deleteAdminButton {
                     height: clamp(30px, 2vw, 2vw);
                     width: clamp(30px, 2vw, 2vw);
                     transition: 0.2s all ease-in-out;
@@ -184,7 +206,7 @@
                     }
                 }
 
-                .editPatientButton {
+                .editPatientButton, .editDoctorButton, .editAdminButton {
                     height: clamp(33px, 2.3vw, 2.3vw);
                     width: clamp(33px, 2.3vw, 2.3vw);
                     transition: 0.2s all ease-in-out;
@@ -224,6 +246,25 @@
             font-size: clamp(1rem, 2vw, 1.8rem) !important;
             text-align: center;
             border-bottom: 3px solid app.$dark-blue-color;
+        }
+    }
+
+    .logOutButton {
+        display: none;
+        padding: 10px 15px;
+        font-size: clamp(1rem, 1vw, 1.8rem) !important;
+        color: red;
+        border: 2px solid red;
+        border-radius: 5px;
+        transition: 0.2s all ease-in-out;
+
+        &:hover {
+            cursor: pointer;
+            transform: scale(1.05);
+        }
+
+        @media only screen and (max-width: 1150px) {
+            display: block;
         }
     }
 }

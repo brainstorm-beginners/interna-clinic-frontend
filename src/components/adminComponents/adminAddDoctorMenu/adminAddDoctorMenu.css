@@ -8,7 +8,7 @@ html, body {
   overflow-x: hidden;
 }
 
-.adminAddPatientMenuBox {
+.adminAddDoctorMenuBox {
   position: fixed;
   display: flex;
   flex-direction: column;
@@ -28,33 +28,33 @@ html, body {
   padding: 20px;
   overflow-x: hidden;
 }
-.adminAddPatientMenuBox .adminAddPatientMenuHeaderBox {
+.adminAddDoctorMenuBox .adminAddDoctorMenuHeaderBox {
   width: 100%;
   height: -moz-max-content;
   height: max-content;
   padding: 10px;
 }
-.adminAddPatientMenuBox .closeAdminAddPatientMenuButton {
+.adminAddDoctorMenuBox .closeAdminAddDoctorMenuButton {
   transition: 0.2s all ease-in-out;
 }
-.adminAddPatientMenuBox .closeAdminAddPatientMenuButton:hover {
+.adminAddDoctorMenuBox .closeAdminAddDoctorMenuButton:hover {
   cursor: pointer;
   transform: scale(1.1);
 }
-.adminAddPatientMenuBox .patientDataInputsList {
+.adminAddDoctorMenuBox .doctorDataInputsList {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
   width: 100%;
 }
-.adminAddPatientMenuBox .patientDataInputsWrapper {
+.adminAddDoctorMenuBox .doctorDataInputsWrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
 }
-.adminAddPatientMenuBox .patientDataInputsWrapper .patientDataLabel {
+.adminAddDoctorMenuBox .doctorDataInputsWrapper .doctorDataLabel {
   color: grey;
   width: calc(80% - 40px);
   max-width: 100%;
@@ -62,7 +62,7 @@ html, body {
   margin-bottom: 5px;
   font-size: clamp(0.9rem, 1.3vw, 1.3rem) !important;
 }
-.adminAddPatientMenuBox .patientDataInputsWrapper .patientDataInput {
+.adminAddDoctorMenuBox .doctorDataInputsWrapper .doctorDataInput {
   width: calc(80% - 40px);
   padding: 5px 10px;
   font-family: "IBM Plex Sans", sans-serif;
@@ -71,7 +71,7 @@ html, body {
   background-color: #ebebeb;
   color: #202020;
 }
-.adminAddPatientMenuBox .patientDataInputsWrapper .patientDataSelect {
+.adminAddDoctorMenuBox .doctorDataInputsWrapper .doctorDataSelect {
   width: calc(80% - 16px);
   padding: 5px 10px;
   font-family: "IBM Plex Sans", sans-serif;
@@ -80,14 +80,14 @@ html, body {
   background-color: #ebebeb;
   color: #202020;
 }
-.adminAddPatientMenuBox .patientDataInputsWrapper .patientDataCheckBoxesWrapper {
+.adminAddDoctorMenuBox .doctorDataInputsWrapper .doctorDataCheckBoxesWrapper {
   max-width: 90% !important;
   border: 2px solid transparent;
   padding: 25px;
   font-family: "IBM Plex Sans", sans-serif;
   font-size: clamp(0.9rem, 1.5vw, 1.3rem);
 }
-.adminAddPatientMenuBox .addPatientButton {
+.adminAddDoctorMenuBox .addDoctorButton {
   display: block;
   padding: 10px 15px;
   background-color: #ebebeb;
@@ -99,7 +99,7 @@ html, body {
   margin-right: auto;
   margin-bottom: 0 !important;
 }
-.adminAddPatientMenuBox .errorMessage {
+.adminAddDoctorMenuBox .errorMessage {
   display: block;
   max-width: 80%;
   text-align: center;
@@ -113,4 +113,4 @@ html, body {
 
 .not-selected {
   border: 2px solid red !important;
-}/*# sourceMappingURL=adminAddPatientMenu.css.map */
+}/*# sourceMappingURL=adminAddDoctorMenu.css.map */

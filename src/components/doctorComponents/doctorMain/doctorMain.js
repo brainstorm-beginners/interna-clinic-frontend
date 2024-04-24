@@ -8,6 +8,8 @@ import { Link, Navigate } from "react-router-dom";
 import React, { useContext, useEffect, useState } from 'react';
 import DoctorPatientDataEditor from '../doctorPatientDataEditor/doctorPatientDataEditor';
 import DoctorAddPatientMenu from '../doctorAddPatientMenu/doctorAddPatientMenu';
+import PageContext from '../../../contexts/pageContext';
+import Pagination from '../../pagination/pagination';
 
 const DoctorMain = ({doctorIIN, openedSection}) => {
     const { refresh, setIsAuthenticated, redirectTo, setRedirectTo } = useContext(AuthContext);
@@ -18,6 +20,9 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
     const [isDataEditorMenuOpened, setIsMenuOpened] = useState(false);
     const [isAddPatientMenuOpened, setIsAddPatientMenuOpened] = useState(false);
     const [searchPatientsResults, setSearchPatientsResults] = useState(null);
+
+    const { currentPage, setCurrentPage } = useContext(PageContext); 
+    const [totalPages, setTotalPages] = useState(0);
 
     useEffect(() => {
         if (redirectTo) {
@@ -114,7 +119,7 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
             }
 
             try {
-                let response = await fetch(`http://localhost:8080/api/v1/doctors/${doctorData.IIN}/patients`, {
+                let response = await fetch(`http://localhost:8080/api/v1/doctors/${doctorData.IIN}/patients?page=${currentPage}&page_size=5`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -126,7 +131,7 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                     try {
                         await refresh();
                         accessToken = localStorage.getItem('accessToken');
-                        response = await fetch(`http://localhost:8080/api/v1/doctors/${doctorData.IIN}/patients`, {
+                        response = await fetch(`http://localhost:8080/api/v1/doctors/${doctorData.IIN}/patients?page=${currentPage}&page_size=5`, {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -134,14 +139,16 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                             }
                         });
                         const doctorsPatientsData = await response.json();
-                        setDoctorsPatientsData(doctorsPatientsData);
+                        setDoctorsPatientsData(doctorsPatientsData['data']);
+                        setTotalPages(doctorsPatientsData['total_pages']);
                         setDataLoading(false);
                     } catch (error) {
                         handleLogout();
                     }
                 } else {
                     const doctorsPatientsData = await response.json();
-                    setDoctorsPatientsData(doctorsPatientsData);
+                    setDoctorsPatientsData(doctorsPatientsData['data']);
+                    setTotalPages(doctorsPatientsData['total_pages']);
                     setDataLoading(false);
                 }
             } catch (error) {
@@ -156,7 +163,7 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
             }
         })();
 
-    }, [doctorIIN, refresh, setIsAuthenticated, setRedirectTo]);      
+    }, [currentPage, doctorIIN, refresh, setIsAuthenticated, setRedirectTo]);      
 
     const deletePatientButtonHandle = async (patientId) => {
         const handleLogout = () => {
@@ -327,6 +334,10 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
         localStorage.removeItem('refreshToken');
     };
 
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
     if (redirectTo) {
         return <Navigate to={redirectTo} replace />;
     }
@@ -400,18 +411,16 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
 
                 <button className='addPatientButton' onClick={openAddPatientMenuHandle}>ДОБАВИТЬ ПАЦИЕНТА</button>
         
-                <div className='doctorPatientsTable'>
+                {(doctorsPatientsData.length > 0 || searchPatientsResults !== null) && <div className='doctorPatientsTable'>
                     {isAddPatientMenuOpened && <div className='blurBackground'></div>}
-                        {isAddPatientMenuOpened && <DoctorAddPatientMenu
-                                                    closeAddPatientMenuHandle={closeAddPatientMenuHandle}
-                                                    doctorId={doctorData.id}
-                                                    doctorsPatientsData={doctorsPatientsData}
-                                                    setDoctorsPatientsData={setDoctorsPatientsData}
-                                                    />}
-                    {searchPatientsResults === null && doctorsPatientsData.map(patient => (
-                        <React.Fragment key={patient.id}>
-                            {isDataEditorMenuOpened && <div className='blurBackground'></div>}
-                            {isDataEditorMenuOpened && <DoctorPatientDataEditor
+                    {isAddPatientMenuOpened && <DoctorAddPatientMenu
+                                                closeAddPatientMenuHandle={closeAddPatientMenuHandle}
+                                                doctorId={doctorData.id}
+                                                doctorsPatientsData={doctorsPatientsData}
+                                                setDoctorsPatientsData={setDoctorsPatientsData}
+                                                />}
+                    {isDataEditorMenuOpened && <div className='blurBackground'></div>}
+                    {isDataEditorMenuOpened && <DoctorPatientDataEditor
                                                 closePatientDataEditorHandle={closePatientDataEditorHandle}
                                                 patientId={selectedPatientId}
                                                 doctorsPatientsData={doctorsPatientsData}
@@ -419,6 +428,8 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                                                 searchPatientsResults={searchPatientsResults}
                                                 setSearchPatientsResults={setSearchPatientsResults}
                                             />}
+                    {searchPatientsResults === null && doctorsPatientsData.map(patient => (
+                        <React.Fragment key={patient.id}>
                             <div className='doctorPatientWrapper'>
                                 <Link to={`/patient/${patient.IIN}/account`}>
                                     <div className='doctorPatientDataBox'>
@@ -437,15 +448,6 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                     {searchPatientsResults && searchPatientsResults.detail === 'Patients not found' && <p className='notFoundTextError'>Ничего не найдено</p>}
                     {searchPatientsResults && searchPatientsResults.length > 0 && searchPatientsResults.detail !== 'Patients not found' && searchPatientsResults.map(patient => (
                         <React.Fragment key={patient.id}>
-                        {isDataEditorMenuOpened && <div className='blurBackground'></div>}
-                        {isDataEditorMenuOpened && <DoctorPatientDataEditor
-                                            closePatientDataEditorHandle={closePatientDataEditorHandle}
-                                            patientId={selectedPatientId}
-                                            doctorsPatientsData={doctorsPatientsData}
-                                            setDoctorsPatientsData={setDoctorsPatientsData}
-                                            searchPatientsResults={searchPatientsResults}
-                                            setSearchPatientsResults={setSearchPatientsResults}
-                                        />}
                             <div className='doctorPatientWrapper'>
                                 <Link to={`/patient/${patient.IIN}/account`}>
                                     <div className='doctorPatientDataBox'>
@@ -461,6 +463,8 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                         </React.Fragment>
                     ))}
                 </div>
+                }
+                { (doctorsPatientsData.length > 0 || searchPatientsResults !== null) && <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={handlePageChange}/> }
             </div>
         );        
     }

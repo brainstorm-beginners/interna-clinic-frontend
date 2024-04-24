@@ -6,25 +6,36 @@ import SearchButtonIcon from './icons/searchIcon.png'
 
 import { Link, Navigate } from "react-router-dom";
 import React, { useContext, useEffect, useState } from 'react';
-import DoctorPatientDataEditor from '../../doctorComponents/doctorPatientDataEditor/doctorPatientDataEditor';
-import DoctorAddPatientMenu from '../../doctorComponents/doctorAddPatientMenu/doctorAddPatientMenu';
 import AdminAddPatientMenu from '../adminAddPatientMenu/adminAddPatientMenu';
 import AdminPatientDataEditor from '../adminPatientDataEditor/adminPatientDataEditor';
+import AdminAddDoctorMenu from '../adminAddDoctorMenu/adminAddDoctorMenu';
+import AdminDoctorDataEditor from '../adminDoctorDataEditor/adminDoctorDataEditor';
+import AddAdminMenu from '../addAdminMenu/addAdminMenu';
+import AdminDataEditor from '../adminDataEditor/adminDataEditor';
+import Pagination from '../../pagination/pagination';
+import PageContext from '../../../contexts/pageContext';
 
 const AdminMain = ({adminUsername, openedSection}) => {
     const { refresh, setIsAuthenticated, redirectTo, setRedirectTo } = useContext(AuthContext);
     const [dataLoading, setDataLoading] = useState(true);
     const [patientsData, setPatientsData] = useState([]);
-    const [doctorsData, setDoctorsData] = useState([])
+    const [doctorsData, setDoctorsData] = useState([]);
+    const [adminsData, setAdminsData] = useState([]);
     const [selectedPatientId, setSelectedPatientId] = useState(null);
     const [selectedDoctorId, setSelectedDoctorId] = useState(null);
+    const [selectedAdminId, setSelectedAdminId] = useState(null);
     const [isPatientDataEditorMenuOpened, setIsPatientDataEditorMenuOpened] = useState(false);
     const [isAddPatientMenuOpened, setIsAddPatientMenuOpened] = useState(false);
     const [isDoctorDataEditorMenuOpened, setIsDoctorDataEditorMenuOpened] = useState(false);
     const [isAddDoctorMenuOpened, setIsAddDoctorMenuOpened] = useState(false);
+    const [isAddAdminMenuOpened, setIsAddAdminMenuOpened] = useState(false);
+    const [isAdminDataEditorMenuOpened, setIsAddAdminDataEditorMenuOpened] = useState(false);
     const [searchPatientsResults, setSearchPatientsResults] = useState(null);
     const [searchDoctorsResults, setSearchDoctorsResults] = useState(null);
-    
+    const [searchAdminsResults, setSearchAdminsResults] = useState(null);
+
+    const { currentPage, setCurrentPage } = useContext(PageContext); 
+    const [totalPages, setTotalPages] = useState(0);
 
     useEffect(() => {
         if (redirectTo) {
@@ -62,7 +73,7 @@ const AdminMain = ({adminUsername, openedSection}) => {
             }
 
             try {
-                let response = await fetch(`http://localhost:8080/api/v1/patients`, {
+                let response = await fetch(`http://localhost:8080/api/v1/patients?page=${currentPage}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -74,7 +85,7 @@ const AdminMain = ({adminUsername, openedSection}) => {
                     try {
                         await refresh();
                         accessToken = localStorage.getItem('accessToken');
-                        response = await fetch(`http://localhost:8080/api/v1/patients`, {
+                        response = await fetch(`http://localhost:8080/api/v1/patients?page=${currentPage}`, {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -82,87 +93,145 @@ const AdminMain = ({adminUsername, openedSection}) => {
                             }
                         });
                         const patientsData = await response.json();
-                        setPatientsData(patientsData);
+                        setPatientsData(patientsData['data']);
+                        setTotalPages(patientsData['total_pages']);
                         setDataLoading(false);
                     } catch (error) {
                         handleLogout();
                     }
                 } else {
                     const patientsData = await response.json();
-                    setPatientsData(patientsData);
+                    setPatientsData(patientsData['data']);
+                    setTotalPages(patientsData['total_pages']);
                     setDataLoading(false);
                 }
             } catch (error) {
                 console.log("An error ocured while trying to fetch the patients data.")
             }
-        }
-
-        fetchPatientsData()
-    }, [refresh, setIsAuthenticated, setRedirectTo]);
-
-    const fetchDoctorsData = async () => {
-        const currentUserData = localStorage.getItem('currentUserData');
-        let accessToken = localStorage.getItem('accessToken');
-        const refreshToken = localStorage.getItem('refreshToken');
-
-        const handleLogout = () => {
-            setIsAuthenticated(false);
-            setRedirectTo('/login');
-            localStorage.removeItem('currentUserData');
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
         };
 
-        if (!currentUserData) {
-            handleLogout();
-            return;
-        }
-
-        if (!accessToken) {
-            if (refreshToken) {
-                await refresh();
-                accessToken = localStorage.getItem('accessToken');
-            } else {
+        const fetchDoctorsData = async () => {
+            const currentUserData = localStorage.getItem('currentUserData');
+            let accessToken = localStorage.getItem('accessToken');
+            const refreshToken = localStorage.getItem('refreshToken');
+    
+            if (!currentUserData) {
                 handleLogout();
                 return;
             }
-        }
-
-        try {
-            let response = await fetch(`http://localhost:8080/api/v1/doctors`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + accessToken
-                }
-            });
-
-            if (!response.ok && response.status === 401) {
-                try {
+    
+            if (!accessToken) {
+                if (refreshToken) {
                     await refresh();
                     accessToken = localStorage.getItem('accessToken');
-                    response = await fetch(`http://localhost:8080/api/v1/doctors`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + accessToken
-                        }
-                    });
-                    const doctorsData = await response.json();
-                    setDoctorsData(doctorsData);
-                    setDataLoading(false);
-                } catch (error) {
+                } else {
                     handleLogout();
+                    return;
                 }
-            } else {
-                const doctorsData = await response.json();
-                setDoctorsData(doctorsData);
-                setDataLoading(false);
             }
-        } catch (error) {
-            console.log("An error ocured while trying to fetch the doctors data.")
+    
+            try {
+                let response = await fetch(`http://localhost:8080/api/v1/doctors?page=${currentPage}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + accessToken
+                    }
+                });
+    
+                if (!response.ok && response.status === 401) {
+                    try {
+                        await refresh();
+                        accessToken = localStorage.getItem('accessToken');
+                        response = await fetch(`http://localhost:8080/api/v1/doctors?page=${currentPage}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + accessToken
+                            }
+                        });
+                        const doctorsData = await response.json();
+                        setDoctorsData(doctorsData['data']);
+                        setTotalPages(doctorsData['total_pages']);
+                        setDataLoading(false);
+                    } catch (error) {
+                        handleLogout();
+                    }
+                } else {
+                    const doctorsData = await response.json();
+                    setDoctorsData(doctorsData['data']);
+                    setTotalPages(doctorsData['total_pages']);
+                    setDataLoading(false);
+                }
+            } catch (error) {
+                console.log("An error ocured while trying to fetch the doctors data.")
+            }
+        };
+
+        const fetchAdminsData = async () => {
+            const currentUserData = localStorage.getItem('currentUserData');
+            let accessToken = localStorage.getItem('accessToken');
+            const refreshToken = localStorage.getItem('refreshToken');
+    
+            if (!currentUserData) {
+                handleLogout();
+                return;
+            }
+    
+            if (!accessToken) {
+                if (refreshToken) {
+                    await refresh();
+                    accessToken = localStorage.getItem('accessToken');
+                } else {
+                    handleLogout();
+                    return;
+                }
+            }
+    
+            try {
+                let response = await fetch(`http://localhost:8080/api/v1/admins`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + accessToken
+                    }
+                });
+    
+                if (!response.ok && response.status === 401) {
+                    try {
+                        await refresh();
+                        accessToken = localStorage.getItem('accessToken');
+                        response = await fetch(`http://localhost:8080/api/v1/admins`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + accessToken
+                            }
+                        });
+                        const adminsData = await response.json();
+                        setAdminsData(adminsData);
+                        setDataLoading(false);
+                    } catch (error) {
+                        handleLogout();
+                    }
+                } else {
+                    const adminsData = await response.json();
+                    setAdminsData(adminsData);
+                    setDataLoading(false);
+                }
+            } catch (error) {
+                console.log("An error ocured while trying to fetch the doctors data.")
+            }
+        };
+        
+        if (openedSection === 'all_patients') {
+            fetchPatientsData();
+        } else if (openedSection === 'all_doctors') {
+            fetchDoctorsData();
+        } else if (openedSection === 'all_admins') {
+            fetchAdminsData();
         }
-    }
+    }, [openedSection, refresh, setIsAuthenticated, setRedirectTo, currentPage]);
 
     const logOutButtonHandle = () => {
         const confirmation = window.confirm("Вы уверены, что хотите выйти из аккаунта?");
@@ -189,6 +258,12 @@ const AdminMain = ({adminUsername, openedSection}) => {
         document.documentElement.style.overflowY = 'hidden';
     }
 
+    const openAdminDataEditorHandle = (adminId) => {
+        setSelectedAdminId(adminId);
+        setIsAddAdminDataEditorMenuOpened(true);
+        document.documentElement.style.overflowY = 'hidden';
+    }
+
     const closePatientDataEditorHandle = () => {
         setSelectedPatientId(null);
         setIsPatientDataEditorMenuOpened(false);
@@ -198,6 +273,12 @@ const AdminMain = ({adminUsername, openedSection}) => {
     const closeDoctorDataEditorHandle = () => {
         setSelectedDoctorId(null);
         setIsDoctorDataEditorMenuOpened(false);
+        document.documentElement.style.overflowY = 'auto';
+    }
+    
+    const closeAdminDataEditorHandle = () => {
+        setSelectedAdminId(null);
+        setIsAddAdminDataEditorMenuOpened(false);
         document.documentElement.style.overflowY = 'auto';
     }
 
@@ -339,6 +420,75 @@ const AdminMain = ({adminUsername, openedSection}) => {
         }
     };
 
+    const deleteAdminButtonHandle = async (adminId) => {
+        const handleLogout = () => {
+            setIsAuthenticated(false);
+            setRedirectTo('/login');
+            localStorage.removeItem('currentUserData');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+        };
+
+        const confirmation = window.confirm("Вы уверены, что хотите удалить админа?");
+        if (!confirmation) {
+            return;
+        }
+
+        const currentUserData = localStorage.getItem('currentUserData');
+        let accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+    
+        if (!currentUserData) {
+            handleLogout();
+            return;
+        }
+    
+        if (!accessToken) {
+            if (refreshToken) {
+                await refresh();
+                accessToken = localStorage.getItem('accessToken');
+            } else {
+                handleLogout();
+                return;
+            }
+        }
+    
+        try {
+            let response = await fetch(`http://localhost:8080/api/v1/admins/delete/${adminId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                }
+            });
+    
+            if (!response.ok && response.status === 401) {
+                try {
+                    await refresh();
+                    accessToken = localStorage.getItem('accessToken');
+                    response = await fetch(`http://localhost:8080/api/v1/admins/delete/${adminId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + accessToken
+                        }
+                    });
+                    const responseData = await response.json();
+                    console.log(responseData);
+                    setAdminsData(adminsData.filter(admin => admin.id !== adminId));
+                } catch (error) {
+                    handleLogout();
+                }
+            } else {
+                const responseData = await response.json();
+                console.log(responseData);
+                setAdminsData(adminsData.filter(admin => admin.id !== adminId));
+            }
+        } catch (error) {
+            console.log("An error occurred while trying to delete the admin.")
+        }
+    };
+
     const searchPatientButtonHandle = async () => {
         const handleLogout = () => {
             setIsAuthenticated(false);
@@ -455,17 +605,13 @@ const AdminMain = ({adminUsername, openedSection}) => {
                         }
                     });
                     const searchResults = await response.json();
-                    let searchResultsArray = [];
-                    searchResultsArray.push(searchResults);
-                    setSearchDoctorsResults(searchResultsArray);
+                    setSearchDoctorsResults(searchResults);
                 } catch (error) {
                     handleLogout();
                 }
             } else {
                 const searchResults = await response.json();
-                let searchResultsArray = [];
-                searchResultsArray.push(searchResults);
-                setSearchDoctorsResults(searchResultsArray);
+                setSearchDoctorsResults(searchResults);
             }
         } catch (error) {
             console.log("TEST: " + searchDoctorsResults)
@@ -483,6 +629,11 @@ const AdminMain = ({adminUsername, openedSection}) => {
         document.documentElement.style.overflowY = 'hidden';
     }
 
+    const openAddAdminMenuHandle = () => {
+        setIsAddAdminMenuOpened(true);
+        document.documentElement.style.overflowY = 'hidden';
+    }
+
     const closeAddPatientMenuHandle = () => {
         setIsAddPatientMenuOpened(false);
         document.documentElement.style.overflowY = 'auto';
@@ -492,6 +643,15 @@ const AdminMain = ({adminUsername, openedSection}) => {
         setIsAddDoctorMenuOpened(false);
         document.documentElement.style.overflowY = 'auto';
     }
+    
+    const closeAddAdminMenuHandle = () => {
+        setIsAddAdminMenuOpened(false);
+        document.documentElement.style.overflowY = 'auto';
+    }
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     if (redirectTo) {
         return <Navigate to={redirectTo} replace />;
@@ -527,14 +687,12 @@ const AdminMain = ({adminUsername, openedSection}) => {
 
                 <div className='patientsTable'>
                     {isAddPatientMenuOpened && <div className='blurBackground'></div>}
-                        {isAddPatientMenuOpened && <AdminAddPatientMenu
-                                                    closeAddPatientMenuHandle={closeAddPatientMenuHandle}
-                                                    patientsData={patientsData}
-                                                    setPatientsData={setPatientsData}
-                                                    />}
-                    {searchPatientsResults === null && patientsData.map(patient => (
-                        <React.Fragment key={patient.id}>
-                            {isPatientDataEditorMenuOpened && <div className='blurBackground'></div>}
+                    {isAddPatientMenuOpened && <AdminAddPatientMenu
+                                                closeAddPatientMenuHandle={closeAddPatientMenuHandle}
+                                                patientsData={patientsData}
+                                                setPatientsData={setPatientsData}
+                                                />}
+                    {isPatientDataEditorMenuOpened && <div className='blurBackground'></div>}
                             {isPatientDataEditorMenuOpened && <AdminPatientDataEditor
                                                 closePatientDataEditorHandle={closePatientDataEditorHandle}
                                                 patientId={selectedPatientId}
@@ -543,6 +701,8 @@ const AdminMain = ({adminUsername, openedSection}) => {
                                                 searchPatientsResults={searchPatientsResults}
                                                 setSearchPatientsResults={setSearchPatientsResults}
                                             />}
+                    {searchPatientsResults === null && patientsData.map(patient => (
+                        <React.Fragment key={patient.id}>
                             <div className='patientWrapper'>
                                 <Link to={`/patient/${patient.IIN}/account`}>
                                     <div className='patientDataBox'>
@@ -561,15 +721,6 @@ const AdminMain = ({adminUsername, openedSection}) => {
                     {searchPatientsResults && searchPatientsResults.detail === 'Patients not found' && <p className='notFoundTextError'>Ничего не найдено</p>}
                     {searchPatientsResults && searchPatientsResults.length > 0 && searchPatientsResults.detail !== 'Patients not found' && searchPatientsResults.map(patient => (
                         <React.Fragment key={patient.id}>
-                        {isPatientDataEditorMenuOpened && <div className='blurBackground'></div>}
-                        {isPatientDataEditorMenuOpened && <DoctorPatientDataEditor
-                                            closePatientDataEditorHandle={closePatientDataEditorHandle}
-                                            patientId={selectedPatientId}
-                                            doctorsPatientsData={patientsData}
-                                            setDoctorsPatientsData={setPatientsData}
-                                            searchPatientsResults={searchPatientsResults}
-                                            setSearchPatientsResults={setSearchPatientsResults}
-                                        />}
                             <div className='patientWrapper'>
                                 <Link to={`/patient/${patient.IIN}/account`}>
                                     <div className='patientDataBox'>
@@ -585,23 +736,89 @@ const AdminMain = ({adminUsername, openedSection}) => {
                         </React.Fragment>
                     ))}
                 </div>
+                {patientsData.length > 0&& <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={handlePageChange}/> }
+
+                <h1 className='accoutActionsSectionTitle'>Действия с аккаунтом</h1>
+                <hr className='accoutActionsDividerLineStart'/>
+                <button className='logOutButton' onClick={() => logOutButtonHandle()}>Выйти из аккаунта</button>
             </div>
         );
-    } else if (openedSection === 'all_doctors') {
-        fetchDoctorsData();
+    } else if (openedSection === 'all_admins') {
         return (
             <div className='adminMain'>
-                <h1 className='dataSectionTitle'>Пациенты в базе данных</h1>
+                <h1 className='dataSectionTitle'>Админы в базе данных</h1>
+                <hr className='dataSectionDividerLineStart'/>
+
+                <button className='addAdminButton' onClick={openAddAdminMenuHandle}>ДОБАВИТЬ АДМИНИСТРАТОРА</button>
+
+                <div className='adminsTable'>
+                    {isAddAdminMenuOpened && <div className='blurBackground'></div>}
+                        {isAddAdminMenuOpened && <AddAdminMenu
+                                                    closeAddAdminMenuHandle={closeAddAdminMenuHandle}
+                                                    adminsData={adminsData}
+                                                    setAdminsData={setAdminsData}
+                                                    />}
+                        {isAdminDataEditorMenuOpened && <div className='blurBackground'></div>}
+                            {isAdminDataEditorMenuOpened && <AdminDataEditor
+                                                closeAdminDataEditorHandle={closeAdminDataEditorHandle}
+                                                adminId={selectedAdminId}
+                                                adminsData={adminsData}
+                                                setAdminsData={setAdminsData}
+                                                searchAdminsResults={searchAdminsResults}
+                                                setSearchAdminsResults={setSearchAdminsResults}
+                                            />}
+                    {searchAdminsResults === null && adminsData.map(admin => (
+                        <React.Fragment key={admin.id}>
+                            <div className='adminWrapper'>
+                                <div className='adminDataBox'>
+                                    <h3 className='adminFullName'>{`${admin.first_name} ${admin.middle_name} ${admin.last_name}`}</h3>
+                                    <p className='adminUsername'>({admin.username})</p>
+                                </div>
+                                <div className='adminControlMenuWrapper'>
+                                {admin.username !== adminUsername && <img src={DeleteButtonIcon} className='deleteAdminButton' alt='Удалить администратора' onClick={() => deleteAdminButtonHandle(admin.id)}></img>}
+
+                                    <img src={EditButtonIcon} className='editAdminButton' alt='Изменить данные' onClick={() => openAdminDataEditorHandle(admin.id)}></img>
+                                </div>
+                            </div>
+                        </React.Fragment>
+                    ))}
+
+                    {searchAdminsResults && searchAdminsResults.detail === "Admins not found" && <p className='notFoundTextError'>Ничего не найдено</p>} 
+                    {searchAdminsResults && searchAdminsResults.length > 0 && searchAdminsResults.detail !== "Admins not found" && searchAdminsResults.map(admin => (
+                        <React.Fragment key={admin.id}>
+                            <div className='adminWrapper'>
+                                <div className='adminDataBox'>
+                                    <h3 className='adminFullName'>{`${admin.first_name} ${admin.middle_name} ${admin.last_name}`}</h3>
+                                    <p className='adminUsername'>({admin.username})</p>
+                                </div>
+                                <div className='adminControlMenuWrapper'>
+                                    <img src={DeleteButtonIcon} className='deleteDoctorButton' alt='Удалить администратора' onClick={() => deleteDoctorButtonHandle(admin.id)}></img>
+                                    <img src={EditButtonIcon} className='editDoctorButton' alt='Изменить данные' onClick={() => openAddAdminMenuHandle(admin.id)}></img>
+                                </div>
+                            </div>
+                        </React.Fragment>
+                    ))}
+                </div>
+
+                <h1 className='accoutActionsSectionTitle'>Действия с аккаунтом</h1>
+                <hr className='accoutActionsDividerLineStart'/>
+                <button className='logOutButton' onClick={() => logOutButtonHandle()}>Выйти из аккаунта</button>
+            </div>
+        );      
+    } else if (openedSection === 'all_doctors') {
+        return (
+            <div className='adminMain'>
+                <h1 className='dataSectionTitle'>Врачи в базе данных</h1>
                 <hr className='dataSectionDividerLineStart'/>
         
                 <div className='searchBarWrapper'>
                     <input 
                         className='searchBar' 
-                        placeholder='Найти врача по ИИН' 
+                        placeholder='Найти врача по ФИО или ИИН' 
                         type='search'
                         onChange={(event) => {
                             if (event.target.value === '') {
-                                setSearchPatientsResults(null);
+                                setSearchDoctorsResults(null);
                             }
                         }}
                     />
@@ -611,23 +828,23 @@ const AdminMain = ({adminUsername, openedSection}) => {
                 <button className='addDoctorButton' onClick={openAddDoctorMenuHandle}>ДОБАВИТЬ ВРАЧА</button>
 
                 <div className='doctorsTable'>
-                    {/* {isAddDoctorMenuOpened && <div className='blurBackground'></div>}
-                        {isAddDoctorMenuOpened && <AdminAddDoctorMenu
-                                                    closeAddDoctorMenuHandle={closeAddDoctorMenuHandle}
-                                                    doctorsData={doctorsData}
-                                                    setDoctorsData={setDoctorsData}
-                                                    />}
-                    {searchDoctorsResults === null && doctorsData.map(doctor => (
-                        <React.Fragment key={doctor.id}>
-                            {isDoctorDataEditorMenuOpened && <div className='blurBackground'></div>}
-                            {isDoctorDataEditorMenuOpened && <AdminDoctorDataEditor
+                    {isAddDoctorMenuOpened && <div className='blurBackground'></div>}
+                    {isAddDoctorMenuOpened && <AdminAddDoctorMenu
+                                                closeAddDoctorMenuHandle={closeAddDoctorMenuHandle}
+                                                doctorsData={doctorsData}
+                                                setDoctorsData={setDoctorsData}
+                                                />}
+                    {isDoctorDataEditorMenuOpened && <div className='blurBackground'></div>}
+                    {isDoctorDataEditorMenuOpened && <AdminDoctorDataEditor
                                                 closeDoctorDataEditorHandle={closeDoctorDataEditorHandle}
                                                 doctorId={selectedDoctorId}
                                                 doctorsData={doctorsData}
                                                 setDoctorsData={setDoctorsData}
                                                 searchDoctorsResults={searchDoctorsResults}
                                                 setSearchDoctorsResults={setSearchDoctorsResults}
-                                            />}
+                                                />}
+                    {searchDoctorsResults === null && doctorsData.map(doctor => (
+                        <React.Fragment key={doctor.id}>
                             <div className='doctorWrapper'>
                                 <Link to={`/doctor/${doctor.IIN}/account`}>
                                     <div className='doctorDataBox'>
@@ -643,19 +860,9 @@ const AdminMain = ({adminUsername, openedSection}) => {
                         </React.Fragment>
                     ))}
 
-                    {searchDoctorsResults && searchDoctorsResults[0].detail === "Doctor not found" && <p className='notFoundTextError'>Ничего не найдено</p>}
-
-                    {searchDoctorsResults && searchDoctorsResults.length > 0 && searchDoctorsResults[0].detail !== "Patient not found" && searchDoctorsResults.map(doctor => (
+                    {searchDoctorsResults && searchDoctorsResults.detail === "Doctors not found" && <p className='notFoundTextError'>Ничего не найдено</p>} 
+                    {searchDoctorsResults && searchDoctorsResults.length > 0 && searchDoctorsResults.detail !== "Doctors not found" && searchDoctorsResults.map(doctor => (
                         <React.Fragment key={doctor.id}>
-                        {isDoctorDataEditorMenuOpened && <div className='blurBackground'></div>}
-                        {isDoctorDataEditorMenuOpened && <AdminDoctorDataEditor
-                                            closeDoctorDataEditorHandle={closeDoctorDataEditorHandle}
-                                            doctorId={selectedDoctorId}
-                                            doctorsData={doctorsData}
-                                            setDoctorsData={setDoctorsData}
-                                            searchDoctorsResults={searchDoctorsResults}
-                                            setSearchDoctorsResults={setSearchDoctorsResults}
-                                        />}
                             <div className='doctorWrapper'>
                                 <Link to={`/doctor/${doctor.IIN}/account`}>
                                     <div className='doctorDataBox'>
@@ -669,14 +876,13 @@ const AdminMain = ({adminUsername, openedSection}) => {
                                 </div>
                             </div>
                         </React.Fragment>
-                    ))} */}
+                    ))}
                 </div>
-            </div>
-        );      
-    } else if (openedSection === 'all_doctors') {
-        return (
-            <div className='adminMain'>
-                
+                {doctorsData.length > 0 && <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={handlePageChange}/> }
+
+                <h1 className='accoutActionsSectionTitle'>Действия с аккаунтом</h1>
+                <hr className='accoutActionsDividerLineStart'/>
+                <button className='logOutButton' onClick={() => logOutButtonHandle()}>Выйти из аккаунта</button>
             </div>
         );        
     }

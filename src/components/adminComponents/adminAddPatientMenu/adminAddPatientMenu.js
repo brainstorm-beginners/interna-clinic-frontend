@@ -27,7 +27,7 @@ const AdminAddPatientMenu = ({closeAddPatientMenuHandle, patientsData, setPatien
         region: {type: 'input', translation: 'Регион', required: true, data_type: 'str'},
         height: {type: 'input', translation: 'Рост (в сантиметрах)', required: true, data_type: 'int'},
         weight: {type: 'input', translation: 'Вес (в килограммах)', required: true, data_type: 'int'},
-        // BMI: {type: 'input', translation: 'Индекс массы тела'}
+        // BMI: {type: 'input', translation: 'Индекс массы тела'} - Автоматически высчитывается и присваивается ниже в методе fetch-запроса
         education: {type: 'enum', options: ['Не оконченное среднее', 'Среднее', 'Высшее'], translation: 'Уровень образования', required: true, data_type: 'str'},
         marital_status: {type: 'enum', options: ['Не замужем/не женат', 'Замужем/Женат', 'Разведен/вдова/вдовец'], translation: 'Семейное положение', required: true,
                                                                                                                                                     data_type: 'str'},
@@ -214,14 +214,14 @@ const AdminAddPatientMenu = ({closeAddPatientMenuHandle, patientsData, setPatien
                             }
                         });
                         const doctorsData = await response.json();
-                        setDoctorsData(doctorsData);
+                        setDoctorsData(doctorsData['data']);
                         setDataLoading(false);
                     } catch (error) {
                         handleLogout();
                     }
                 } else {
                     const doctorsData = await response.json();
-                    setDoctorsData(doctorsData);
+                    setDoctorsData(doctorsData['data']);
                     setDataLoading(false);
                 }
             } catch (error) {
@@ -335,7 +335,7 @@ const AdminAddPatientMenu = ({closeAddPatientMenuHandle, patientsData, setPatien
         } catch (error) {
             console.error(error.message);
             console.log("ERROR FIELD: " + error.message.split(' ')[1])
-            return error.message; // Верните имя поля с ошибкой
+            return error.message;
         }
     };        
     
@@ -454,9 +454,9 @@ const AdminAddPatientMenu = ({closeAddPatientMenuHandle, patientsData, setPatien
                     }
                     if (field.type === 'enum' || field.type === 'enum_expandable') {
                         return (
-                            <div className='patidentDataInputsWrapper' key={fieldKey}>
+                            <div className='patientDataInputsWrapper' key={fieldKey}>
                                 <label className='patientDataLabel'>{field.translation || fieldKey}</label>
-                                <select className={`patidentDataSelect ${!field.required ? '' : 'not-selected'}`} onChange={(event) => handleInputChange(fieldKey, event)}>
+                                <select className={`patientDataSelect ${!field.required ? '' : 'not-selected'}`} onChange={(event) => handleInputChange(fieldKey, event)}>
                                     {field.default 
                                         ? <option value={field.default}>{field.default}</option>
                                         : <option value="">Выберите опцию...</option>
@@ -478,11 +478,11 @@ const AdminAddPatientMenu = ({closeAddPatientMenuHandle, patientsData, setPatien
                                 {field.type === 'enum_expandable' && field.options.map(option => {
                                     if (typeof option === 'object' && Object.keys(option).includes(formData[fieldKey])) {
                                         return (
-                                            <div className='patidentDataInputsWrapper' key={fieldKey}>
+                                            <div className='patientDataInputsWrapper' key={fieldKey}>
                                                 <label className='patientDataLabel' style={{marginTop: '20px'}}>
                                                     {fields[Object.values(option)[0]].translation || fieldKey}
                                                 </label>
-                                                <input className={`patidentDataInput`} onChange={(event) => handleInputChange(Object.values(option)[0], event)} />
+                                                <input className={`patientDataInput`} onChange={(event) => handleInputChange(Object.values(option)[0], event)} />
                                             </div>
                                         );
                                     }
@@ -491,9 +491,9 @@ const AdminAddPatientMenu = ({closeAddPatientMenuHandle, patientsData, setPatien
                         );
                     } else if (field.type === 'input') {
                         return (
-                            <div className='patidentDataInputsWrapper' key={fieldKey}>
+                            <div className='patientDataInputsWrapper' key={fieldKey}>
                                 <label className='patientDataLabel'>{field.translation || fieldKey}</label>
-                                <input className={`patidentDataInput ${!field.required ? '' : 'not-selected'}`} onChange={(event) => handleInputChange(fieldKey, event)} />
+                                <input className={`patientDataInput ${!field.required ? '' : 'not-selected'}`} onChange={(event) => handleInputChange(fieldKey, event)} />
                             </div>
                         );
                     } else if (field.type === 'multiple') {
@@ -502,9 +502,9 @@ const AdminAddPatientMenu = ({closeAddPatientMenuHandle, patientsData, setPatien
                         const anyOptionSelected = formData[fieldKey].length > 0;
 
                         return (
-                            <div className='patidentDataInputsWrapper' key={fieldKey}>
+                            <div className='patientDataInputsWrapper' key={fieldKey}>
                                 <label className='patientDataLabel'>{field.translation || fieldKey}</label>
-                                <div className={`patidentDataCheckBoxesWrapper ${field.required && !anyOptionSelected ? 'not-selected' : ''}`}>
+                                <div className={`patientDataCheckBoxesWrapper ${field.required && !anyOptionSelected ? 'not-selected' : ''}`}>
                                     {field.options.map((option, index) => (
                                         <div key={index}>
                                             <input 

@@ -1,39 +1,6 @@
 @use '../../app/app.scss';
 
-.dataEditorLoader {
-    display: grid;
-    width: 50px;
-    aspect-ratio: 1;
-    border: 4px solid #0000;
-    border-radius: 50%;
-    border-right-color: app.$dark-blue-color;
-    animation: infiniteRotating 1s infinite linear;
-    margin-top: calc(30% - 30px);
-    margin-left: calc(50% - 35px);
-    margin-bottom: 100px;
-
-    &::before, &::after {
-        content: "";
-        grid-area: 1/1;
-        margin: 2px;
-        border: inherit;
-        border-radius: 50%;
-        animation: infiniteRotating 2s infinite;
-    }
-
-    &::after {
-        margin: 8px;
-        animation-duration: 3s;
-    }
-
-    @keyframes infiniteRotating { 
-        100% {
-            transform: rotate(1turn)
-        }
-    }
-}
-
-.patientDataEditorBox {
+.adminAddAdminMenuBox {
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -50,16 +17,16 @@
     font-family: app.$basic-font-family;
     font-size: clamp(0.7rem, 1.6vw, 1.3rem);
     overflow-y: auto;
-    padding-bottom: 30px;
+    padding: 20px;
     overflow-x: hidden;
 
-    .patientDataEditorHeaderBox {
+    .adminAddAdminMenuHeaderBox {
         width: 100%;
         height: max-content;
         padding: 10px;
     }
 
-    .closePatientDataEditorButton {
+    .closeAdminAddAdminMenuButton {
         transition: 0.2s all ease-in-out;
 
         &:hover {
@@ -68,7 +35,7 @@
         }
     }
 
-    .patientDataInputsList {
+    .adminDataInputsList {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -76,13 +43,13 @@
         width: 100%;
     }
 
-    .patientDataInputsWrapper {
+    .adminDataInputsWrapper {
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 100%;
 
-        .patientDataLabel {
+        .adminDataLabel {
             color: grey;
             width: calc(80% - 40px);
             max-width: 100%;
@@ -91,7 +58,7 @@
             font-size: clamp(0.9rem, 1.3vw, 1.3rem) !important;
         }
 
-        .patientDataInput {
+        .adminDataInput {
             width: calc(80% - 40px);
             padding: 5px 10px;
             font-family: app.$basic-font-family;
@@ -101,7 +68,7 @@
             color: app.$dark-font-color;
         }
 
-        .patientDataSelect {
+        .adminDataSelect {
             width: calc(80% - 16px);
             padding: 5px 10px;
 
@@ -112,28 +79,26 @@
             color: app.$dark-font-color;
         }
 
-        .patientDataCheckBoxesWrapper {
-            max-width: 100%;
+        .adminDataCheckBoxesWrapper {
+            max-width: 90% !important;
             border: 2px solid transparent;
             padding: 25px;
-        }   
+            font-family: app.$basic-font-family;
+            font-size: clamp(0.9rem, 1.5vw, 1.3rem);
+        }    
     }
 
-    .patientDataSaveButton {
-        height: max-content;
-        width: max-content;
-        padding: 15px 20px 13px 20px;
-        color: green;
+    .addAdminButton {
+        display: block;
+        padding: 10px 15px;
+        background-color: app.$white-color;
+        border-radius: 5px;
         border: 3px solid green;
-        border-radius: 10px;
+        color: green;
+        font-size: clamp(0.7rem, 1.2vw, 1rem) !important;
         margin-left: auto;
         margin-right: auto;
-        transition: 0.2s all ease-in-out;
-
-        &:hover {
-            cursor: pointer;
-            transform: scale(1.05);
-        }
+        margin-bottom: 0 !important;
     }
 
     .errorMessage {
@@ -147,4 +112,8 @@
         margin-left: auto;
         margin-right: auto;
     }  
+}
+
+.not-selected {
+    border: 2px solid red !important;
 }
