@@ -24,7 +24,7 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
     const { currentPage, handlePageChange, prevCurrentPage, setPrevCurrentPage } = useContext(PageContext); 
     const [totalPages, setTotalPages] = useState(0);
     const [isSearchClicked, setIsSearchClicked] = useState(false);
-    const [prevTotalPages, setPrevTotalPages] = useState(0);
+    const [prevTotalPages, setPrevTotalPages] = useState(1);
 
     useEffect(() => {
         if (redirectTo) {
@@ -241,7 +241,11 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
         if (doctorsPatientsData.length - 1 === 0) {
             handlePageChange(prevCurrentPage);
         }
-    };    
+    };
+    
+    useEffect(()=> {
+        console.log("PREV TOTAL PAGES: " + prevTotalPages)
+    }, [prevTotalPages])
 
     const searchPatientsButtonHandle = async () => {
         setPrevTotalPages(totalPages);
@@ -433,8 +437,6 @@ const DoctorMain = ({doctorIIN, openedSection}) => {
                                 setPrevCurrentPage(currentPage);
                                 handlePageChange(1);
                                 setSearchPatientsResults(null);
-                                console.log("PREV TOTAL PAGES BY DELETING QUERY: " + prevTotalPages)
-                                setTotalPages(prevTotalPages);
                             }
                         }}
                     />
