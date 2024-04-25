@@ -4,7 +4,7 @@ import PageContext from '../../contexts/pageContext';
 import { useLocation } from 'react-router-dom';
 
 const Pagination = ({ totalPages }) => {
-    const { currentPage, handlePageChange } = useContext(PageContext);
+    const { currentPage, handlePageChange, setPrevCurrentPage } = useContext(PageContext);
     let location = useLocation();
 
     useEffect(() => {
@@ -17,9 +17,9 @@ const Pagination = ({ totalPages }) => {
   
     return (
       <div className="pageSelectorMenu">
-        <button className="pageSelectorButton" disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}> {"<"} </button>
+        <button className="pageSelectorButton" disabled={currentPage === 1} onClick={() => {setPrevCurrentPage(currentPage); handlePageChange(currentPage - 1);}}> {"<"} </button>
         <span className="pageStatus">{currentPage}</span>
-        <button className="pageSelectorButton" disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}> {">"} </button>
+        <button className="pageSelectorButton" disabled={currentPage === totalPages} onClick={() => {setPrevCurrentPage(currentPage); handlePageChange(currentPage + 1);}}> {">"} </button>
       </div>
     );
 };
