@@ -243,6 +243,14 @@ const DoctorAddPatientMenu = ({closeAddPatientMenuHandle, doctorId, doctorsPatie
                             throw new Error(`Поле '${fieldTranslation}' должно содержать ровно 12 цифр.`);
                         }
                     }
+                    if ((key === 'first_name' || key === 'last_name' || key === 'middle_name') && data[key] === '') {
+                        console.log("OOOPS ERROR HERE")
+                        throw new Error(`Поле '${fieldTranslation}' не может быть пустым.`);
+                    }
+                    if ((key === 'first_name' || key === 'last_name' || key === 'middle_name') && /\d/.test(data[key])) {
+                        console.log("OOOPS ERROR HERE")
+                        throw new Error(`Поле '${fieldTranslation}' не должно содержать цифр.`);
+                    }
                     if (fields[key]?.data_type === 'int' && !Number.isInteger(Number(data[key]))) {
                         console.log("OOOPS ERROR HERE")
                         throw new Error(`Поле '${fieldTranslation}' должно быть целым числом.`);

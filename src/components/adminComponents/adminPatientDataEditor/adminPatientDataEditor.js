@@ -236,7 +236,7 @@ const AdminPatientDataEditor = ({closePatientDataEditorHandle, patientId, patien
             }
     
             try {
-                let response = await fetch(`http://localhost:8080/api/v1/doctors`, {
+                let response = await fetch(`http://localhost:8080/api/v1/doctors_without_pagination`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -248,7 +248,7 @@ const AdminPatientDataEditor = ({closePatientDataEditorHandle, patientId, patien
                     try {
                         await refresh();
                         accessToken = localStorage.getItem('accessToken');
-                        response = await fetch(`http://localhost:8080/api/v1/doctors`, {
+                        response = await fetch(`http://localhost:8080/api/v1/doctors_without_pagination`, {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -256,14 +256,14 @@ const AdminPatientDataEditor = ({closePatientDataEditorHandle, patientId, patien
                             }
                         });
                         const doctorsData = await response.json();
-                        setDoctorsData(doctorsData['data']);
+                        setDoctorsData(doctorsData);
                         setDataLoading(false);
                     } catch (error) {
                         handleLogout();
                     }
                 } else {
                     const doctorsData = await response.json();
-                    setDoctorsData(doctorsData['data']);
+                    setDoctorsData(doctorsData);
                     setDataLoading(false);
                 }
             } catch (error) {
@@ -355,6 +355,10 @@ const AdminPatientDataEditor = ({closePatientDataEditorHandle, patientId, patien
                     if ((key === 'first_name' || key === 'last_name' || key === 'middle_name') && data[key] === '') {
                         console.log("OOOPS ERROR HERE")
                         throw new Error(`Поле '${fieldTranslation}' не может быть пустым.`);
+                    }
+                    if ((key === 'first_name' || key === 'last_name' || key === 'middle_name') && /\d/.test(data[key])) {
+                        console.log("OOOPS ERROR HERE")
+                        throw new Error(`Поле '${fieldTranslation}' не должно содержать цифр.`);
                     }
                     if (fields[key]?.data_type === 'int' && !Number.isInteger(Number(data[key]))) {
                         console.log("OOOPS ERROR HERE")
